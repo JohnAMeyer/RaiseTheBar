@@ -13,15 +13,19 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import android.widget.EditText;
 import android.widget.TextView;
 /**
  * This class combines both functionalities
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
+    public static final double[] ZERO = {0D,0D,0D};
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mOrientation;
@@ -29,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ArrayList<Tuple> accelerometer_event;
     private ArrayList<Tuple> tilt_event;
     private boolean toggle = false;
+    EditText weightEdit;
+    private int weight=0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        weightEdit = (EditText)findViewById(R.id.editWeight);
+
 
     }
     protected void changed(){
@@ -76,6 +85,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         maxSpeed.setText(numberMaxSpeedAsString);
     }
     protected void process(){
+        long time_0 = accelerometer_event.get(0).time;
+        for (Tuple tu : accelerometer_event){
+            tu.time-= time_0;
+            //tu.time /= 1000000000;
+        }
+        LinkedList<Tuple> reimannVel = new LinkedList<>();
+        reimannVel.add(new Tuple(ZERO,0));
+        double maxVel = 0D;
+        for (int i = 1; i < accelerometer_event.size();i++){
+            double[] vel = new double[3];
+            long time = (accelerometer_event.get(i).time-accelerometer_event.get(i-1).time);
+            vel[0] = (accelerometer_event.get(i).data[0]*time + reimannVel.peekLast().data[0]);
+            vel[1] = (accelerometer_event.get(i).data[1]*time + reimannVel.peekLast().data[1]);
+            vel[2] = (accelerometer_event.get(i).data[2]*time + reimannVel.peekLast().data[2]);
+            reimannVel.add(new Tuple(vel,accelerometer_event.get(i).time));
+            double velNorm = Math.hypot(Math.hypot(vel[0],vel[1]),vel[2]);
+            maxVel = (velNorm>maxVel)?velNorm : maxVel;
+        }
+
 
     }
 
@@ -95,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             toggle = true;
             accelerometer_event=new ArrayList<Tuple>();
             tilt_event=new ArrayList<Tuple>();
+            weight = Integer.parseInt(weightEdit.getText().toString());
 
         }
     }
@@ -129,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     class Tuple {
         long time;
-        float[] data;
+        double[] data;
 
-        public Tuple(float[] data, long time) {
+        public Tuple(double[] data, long time) {
             this.data = data;
             this.time = time;
         }

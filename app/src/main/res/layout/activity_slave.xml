@@ -14,8 +14,19 @@
         android:text="StartClick"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:id="@+id/StartClick"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="182dp"
-        android:id="@+id/StartClick" />
+        android:layout_marginBottom="132dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_marginTop="97dp"
+        android:id="@+id/editWeight"
+        android:text="Enter Weight:"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
