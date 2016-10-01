@@ -8,25 +8,36 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.nd.raisethebar.SlaveActivity">
+    tools:context="@android:dimen/app_icon_size"
+    android:background="?android:attr/colorBackground"
+    tools:background="@color/colorPrimaryDark">
 
     <Button
-        android:text="StartClick"
+        android:text="Start Recording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/StartClick"
+        android:layout_marginBottom="130dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="132dp" />
+        android:backgroundTint="?android:attr/colorPressedHighlight"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        android:textColor="@android:color/background_light" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:layout_marginTop="97dp"
         android:id="@+id/editWeight"
-        android:text="Enter Weight:"
+        tools:text=" "
+        android:hint="Enter Weight: "
+        android:layout_marginTop="66dp"
+        android:gravity="center_vertical|center_horizontal|fill_horizontal"
+        android:textColor="?attr/colorControlNormal"
+        android:contextClickable="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColorHighlight="@android:color/background_light" />
+
 </RelativeLayout>
