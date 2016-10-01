@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         maxSpeed.setText(numberMaxSpeedAsString);
     }
     protected void process(){
-        
+
     }
 
     public void onClick(View v) {
