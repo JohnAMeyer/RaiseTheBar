@@ -8,10 +8,43 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.nd.raisethebar.MasterActivity">
+    tools:context="edu.nd.raisethebar.MasterActivity"
+    android:background="@android:drawable/alert_light_frame">
 
-    <TextView
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        android:id="@+id/graph" />
+
+    <CheckedTextView
+        android:text="Correct Form"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_marginBottom="24dp"
+        android:id="@+id/checkedTextView2"
+        android:checked="false"
+        android:textSize="30sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Maximum speed:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView3"
+        android:textSize="24sp"
+        android:layout_above="@+id/checkedTextView2"
+        android:layout_alignStart="@+id/checkedTextView2"
+        android:layout_marginBottom="67dp" />
+
+    <TextView
+        android:text="Number of reps:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView2"
+        android:textSize="24sp"
+        android:layout_centerVertical="true"
+        android:layout_alignEnd="@+id/checkedTextView2" />
+
+
 </RelativeLayout>
