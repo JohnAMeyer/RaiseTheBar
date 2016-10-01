@@ -9,21 +9,24 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.nd.raisethebar.MasterActivity"
-    android:background="@android:drawable/alert_light_frame">
+    android:background="@android:color/transparent">
 
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph" />
-
-    <CheckedTextView
-        android:text="Correct Form"
+    <TextView
+        android:text="0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:id="@+id/checkedTextView2"
-        android:checked="false"
-        android:textSize="30sp"
+        android:layout_above="@+id/textForm"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp"
+        android:id="@+id/textMaxSpeed"
+        android:textSize="36sp" />
+
+    <TextView
+        android:text="Form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textForm"
+        android:textSize="36sp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -31,20 +34,57 @@
         android:text="Maximum speed:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
+        android:id="@+id/textStaticSpeed"
         android:textSize="24sp"
-        android:layout_above="@+id/checkedTextView2"
-        android:layout_alignStart="@+id/checkedTextView2"
-        android:layout_marginBottom="67dp" />
+        android:layout_marginBottom="13dp"
+        android:layout_above="@+id/textMaxSpeed"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:text="m/s"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textStaticUnits"
+        android:textSize="24sp"
+        android:layout_alignBaseline="@+id/textMaxSpeed"
+        android:layout_alignBottom="@+id/textMaxSpeed"
+        android:layout_toEndOf="@+id/textMaxSpeed"
+        android:layout_marginStart="17dp" />
+
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        android:id="@+id/graph"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:text="Number of reps:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/textView2"
+        android:id="@+id/textRepsStatic"
         android:textSize="24sp"
-        android:layout_centerVertical="true"
-        android:layout_alignEnd="@+id/checkedTextView2" />
+        android:layout_above="@+id/textNumberReps"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:text="seconds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textStaticSec"
+        android:layout_below="@+id/graph" />
+
+    <TextView
+        android:text="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textNumberReps"
+        android:textSize="36sp"
+        android:layout_above="@+id/textStaticSpeed"
+        android:layout_alignStart="@+id/textMaxSpeed" />
 
 
 </RelativeLayout>
