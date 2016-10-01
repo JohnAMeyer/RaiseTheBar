@@ -23,14 +23,17 @@ public class MasterActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         GraphView graph = (GraphView) findViewById(R.id.graph);
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-                new DataPoint(0, 1),
-                new DataPoint(1, 5),
-                new DataPoint(2, 3),
-                new DataPoint(3, 2),
-                new DataPoint(4, 6)
+        int[] arrayY = {1,15,3,8,7};
+        int[] arrayX = {0,1,2,3,4};
 
-        });
+        int lengthArrays = arrayX.length;
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
+
+        for (int i = 0; i < arrayY.length; i++) {
+            series.appendData(new DataPoint((arrayX[i]), (arrayY[i])), true, lengthArrays);
+        }
+
         graph.addSeries(series);
         graph.setTitle("Acceleration of the Bar");
 
@@ -45,12 +48,12 @@ public class MasterActivity extends AppCompatActivity {
         }
 
         int countReps = 5;
-        String numberRepsAsString = Integer.toString(countReps);
+        String numberRepsAsString = countReps+"";
         TextView numberReps = (TextView) findViewById(R.id.textNumberReps);
         numberReps.setText(numberRepsAsString);
 
-        float countMaxSpeed = 10;
-        String numberMaxSpeedAsString = Float.toString(countMaxSpeed);
+        double countMaxSpeed = 10;
+        String numberMaxSpeedAsString = Double.toString(countMaxSpeed);
         TextView maxSpeed = (TextView) findViewById(R.id.textMaxSpeed);
         maxSpeed.setText(numberMaxSpeedAsString);
 
