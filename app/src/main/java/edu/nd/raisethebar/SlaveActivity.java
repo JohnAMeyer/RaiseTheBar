@@ -28,7 +28,8 @@ public class SlaveActivity extends AppCompatActivity {
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
      protected void onPause(){
-       
+     super.onPause();
+         mSensorManager.unregisterListener(this);
      }
 
 }
