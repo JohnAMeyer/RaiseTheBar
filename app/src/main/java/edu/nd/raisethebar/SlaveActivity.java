@@ -74,10 +74,10 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
             // unregister listener
             mSensorManager.unregisterListener(this, mAccelerometer);
             mSensorManager.unregisterListener(this, mOrientation);
-            ct = ct.send(this.accelerometer_event);
-            ct.start(); //look for next device
+            ct = ct.send(this.accelerometer_event,tilt_event);
             startClick.setText("START RECORDING");
             toggle = false;
+            ct.start(); //look for next device
         } else {
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
@@ -105,33 +105,24 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
-
-    protected class Tuple {
-        long time;
-        float[] data;
-
-        public Tuple(float[] data, long time) {
-            this.data = data;
-            this.time = time;
-        }
-        @Override
-        public String toString(){
-            return "{" +time + ":" + Arrays.toString(data) + "}";
-        }
-    }
     protected class ConnectionThread extends Thread {
         BluetoothSocket bs;
-        public ConnectionThread send(ArrayList<Tuple> data){
+        public ConnectionThread send(ArrayList<Tuple>... events){
             try {
                 DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(bs.getOutputStream()));
-                dos.writeInt(data.size());
-                for (int i = 0; i < 10; i++) {
-                    Tuple t = data.get(i);
-                    dos.writeLong(t.time);
-                    dos.writeDouble(t.data[0]);
-                    dos.writeDouble(t.data[1]);
-                    dos.writeDouble(t.data[2]);
+                dos.writeByte(events.length);
+                int z = -1;
+                for(ArrayList<Tuple> data : events) {
+                    dos.writeInt(data.size());
+                    Log.d(TAG,"Reading all " + data.size() + "events in " + z++ + "th set");
+                    for (int i = 0; i < data.size(); i++) {
+                        Tuple t = data.get(i);
+                        dos.writeLong(t.time);
+                        dos.writeDouble(t.data[0]);
+                        dos.writeDouble(t.data[1]);
+                        dos.writeDouble(t.data[2]);
+                        Log.d(TAG,t.toString());
+                    }
                 }
                 Log.d(TAG, "Written");
                 dos.flush();

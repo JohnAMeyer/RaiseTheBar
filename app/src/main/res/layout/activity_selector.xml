@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_slave"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.nd.raisethebar.SlaveActivity">
-
+    android:paddingTop="@dimen/activity_vertical_margin">
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editWeight"
+        tools:text=" "
+        android:hint="Enter Weight: "
+        android:layout_marginTop="66dp"
+        android:gravity="center_vertical|center_horizontal|fill_horizontal"
+        android:textColor="?attr/colorControlNormal"
+        android:contextClickable="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textColorHighlight="@android:color/background_light" />
     <Button
         android:text="Select Machine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:id="@+id/button"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="182dp"
-        android:id="@+id/StartClick" />
+        android:onClick="fireIntent"/>
 </RelativeLayout>

@@ -54,7 +54,7 @@ public class DeviceDialog extends AppCompatActivity {
     /**
      * Tag for Log
      */
-    private static final String TAG = "DeviceDialogAcivity";
+    private static final String TAG = "DeviceDialogActivity";
 
     /**
      * Return Intent extra
