@@ -30,4 +30,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.jjoe64:graphview:4.2.1'
     testCompile 'junit:junit:4.12'
+    android {
+        useLibrary 'org.apache.http.legacy'
+    }
 }

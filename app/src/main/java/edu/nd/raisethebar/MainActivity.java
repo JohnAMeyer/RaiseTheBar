@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +25,14 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
+
 /**
  * This class combines both functionalities
  */
@@ -43,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double norm_Of_g=0;
     boolean goodform = true;
     double[] smooth_accelerometer;
+    private static final String TAG = "MainActivity.java";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     protected void changed(){
         process();
+        new PostThread().start();
         GraphView graph = (GraphView) findViewById(R.id.graph);
 
         int lengthAccelerometer = accelerometer_event.size();
@@ -97,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String weightAsString=Integer.toString(weight);
         TextView weightview = (TextView) findViewById(R.id.textWeight);
         weightview.setText(weightAsString);
+
     }
     protected void process(){
         long time_0 = accelerometer_event.get(0).time;
@@ -228,6 +242,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         public String toString(){
             return "{" +time + ":" + Arrays.toString(data) + "}";
+        }
+    }
+    class PostThread extends Thread{
+        @Override
+        public void run () {
+            try{
+          URL url = new URL("http://localhost:8888/android.php");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(false);
+                connection.setRequestMethod("POST");
+                connection.connect();
+                OutputStream os = connection.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(os));
+
+                dos.writeBoolean(goodform);
+                dos.flush();
+
+                dos.close();
+                os.close();
+
+            }
+            catch(Exception e){
+                Log.d(TAG, "Buffer Error");
+            }
         }
     }
 }
