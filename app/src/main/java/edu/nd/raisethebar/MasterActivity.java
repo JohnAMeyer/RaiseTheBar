@@ -18,6 +18,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -29,7 +31,7 @@ public class MasterActivity extends AppCompatActivity {
     private static final double[] ZERO = {0D, 0D, 0D};
     ConnectionThread ct;
     String SUUID = "fa87c0d0-afac-11de-8a39-0800200c9a66";
-    public static final String TAG = "MAIN ACTIVITY";
+    public static final String TAG = "MASTER ACTIVITY";
     private double[] times;
     private boolean goodForm;
     private int reps;
@@ -103,6 +105,7 @@ public class MasterActivity extends AppCompatActivity {
                 weightview.setText(weightAsString);
             }
         });
+        sendData();
     }
 
     protected void process(ArrayList<Tuple> accEvents, ArrayList<Tuple> tiltEvents) {
@@ -162,7 +165,18 @@ public class MasterActivity extends AppCompatActivity {
 
 
     }
-
+    protected void sendData(){
+        try {
+            Log.d(TAG,"Sending");
+            URL url = new URL("http://whaleoftime.com/update.php?goodform=" + (goodForm ? 1 : 0) + "&reps=" + reps + "&machine=" + "weight1");
+            Log.d(TAG,url.toString());
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.connect();
+            urlConnection.disconnect();
+        }catch(Exception e){
+            Log.e(TAG,"URL Error",e);
+        }
+    }
     class ConnectionThread extends Thread {
         private BluetoothSocket socket;
 

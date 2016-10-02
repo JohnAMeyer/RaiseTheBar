@@ -11,9 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import com.jjoe64.graphview.GraphView;
@@ -22,11 +22,15 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import android.widget.EditText;
 import android.widget.TextView;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 /**
  * This class combines both functionalities
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
     public static final double[] ZERO = {0D,0D,0D};
+    public static final String TAG = "MAIN ACTIVITY";
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mOrientation;
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     double[] times;
     int reps =0;
     double norm_Of_g=0;
-    boolean goodform = true;
+    boolean goodForm = true;
     double[] smooth_accelerometer;
 
     @Override
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         graph.getViewport().setScrollable(true);
 
         TextView form = (TextView) findViewById(R.id.textForm);
-        if (goodform) {
+        if (goodForm) {
             form.setText("Good Form");
             form.setTextColor(0xff00ff00);
         } else {
@@ -97,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String weightAsString=Integer.toString(weight);
         TextView weightview = (TextView) findViewById(R.id.textWeight);
         weightview.setText(weightAsString);
+        new Thread(){
+            @Override
+            public void run() {
+                sendData();
+            }
+        }.start();
     }
     protected void process(){
         long time_0 = accelerometer_event.get(0).time;
@@ -147,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         for (int i = 0; i<(tilt_event.size());i++){
             rotation_array[i]=Math.round(Math.toDegrees(Math.atan2(tilt_event.get(i).data[0], tilt_event.get(i).data[2])));
             if (rotation_array[i]>=20){
-                goodform=false;
+                goodForm =false;
             }
         }
 
@@ -208,5 +218,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+    }
+
+    protected void sendData(){
+        try {
+            Log.d(TAG,"Sending");
+            URL url = new URL("http://whaleoftime.com/update.php?goodform=" + (goodForm ? 1 : 0) + "&reps=" + reps + "&machine=" + "weight1");
+            Log.d(TAG,url.toString());
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.connect();
+            urlConnection.getInputStream().available();
+            urlConnection.disconnect();
+        }catch(Exception e){
+            Log.e(TAG,"URL Error",e);
+        }
     }
 }
