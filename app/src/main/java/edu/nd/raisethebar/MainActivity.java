@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mSensorManager.unregisterListener(this);
     }
 
-    class Tuple {
+    protected class Tuple {
         long time;
         double[] data;
 

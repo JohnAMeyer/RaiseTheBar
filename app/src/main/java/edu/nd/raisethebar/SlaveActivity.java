@@ -1,5 +1,8 @@
 package edu.nd.raisethebar;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothServerSocket;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +13,19 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
+
+import static android.R.attr.data;
+import static android.R.attr.x;
+import static android.R.attr.y;
+import static edu.nd.raisethebar.R.id.StartClick;
 
 /**
  * This class is for the device that is recording the data
@@ -21,6 +33,9 @@ import java.util.Arrays;
 
 
 public class SlaveActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
+    public static final String TAG = "Slave Device";
+    String SUUID = "fa87c0d0-afac-11de-8a39-0800200c9a66";
+
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private Sensor mOrientation;
@@ -28,18 +43,30 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
     private ArrayList<Tuple> accelerometer_event;
     private ArrayList<Tuple> tilt_event;
     private boolean toggle = false;
+    Button startClick;
+    ConnectionThread ct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slave);
 
-        Button StartClick = (Button) findViewById(R.id.StartClick);
-        StartClick.setOnClickListener(this);
+        startClick = (Button) findViewById(R.id.StartClick);
+        startClick.setOnClickListener(this);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ct = new ConnectionThread();
+        ct.start();
+    }
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
     public void onClick(View v) {
@@ -47,35 +74,31 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
             // unregister listener
             mSensorManager.unregisterListener(this, mAccelerometer);
             mSensorManager.unregisterListener(this, mOrientation);
+            ct = ct.send(this.accelerometer_event);
+            ct.start(); //look for next device
+            startClick.setText("START RECORDING");
             toggle = false;
-            Log.d("Speed Data", accelerometer_event.toString());
-            Log.d("Tilt Data", tilt_event.toString());
         } else {
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
             toggle = true;
             accelerometer_event=new ArrayList<Tuple>();
             tilt_event=new ArrayList<Tuple>();
-
+            startClick.setText("END RECORDING");
         }
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         // find if the event is a acceleration or gyro
         if (event.sensor == mAccelerometer) {
             //write to accelerometer tuple arraylist
             accelerometer_event.add(new Tuple(event.values, event.timestamp));
         } else {
             tilt_event.add(new Tuple(event.values, event.timestamp));
-
             //gyroscope_event.add
             // write to array list
         }
-
-
-        // read event.values -- write to correct list in tuple class
     }
 
     @Override
@@ -83,12 +106,8 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
 
     }
 
-    protected void onPause() {
-        super.onPause();
-        mSensorManager.unregisterListener(this);
-    }
 
-    class Tuple {
+    protected class Tuple {
         long time;
         float[] data;
 
@@ -99,6 +118,42 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
         @Override
         public String toString(){
             return "{" +time + ":" + Arrays.toString(data) + "}";
+        }
+    }
+    protected class ConnectionThread extends Thread {
+        BluetoothSocket bs;
+        public ConnectionThread send(ArrayList<Tuple> data){
+            try {
+                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(bs.getOutputStream()));
+                dos.writeInt(data.size());
+                for (int i = 0; i < 10; i++) {
+                    Tuple t = data.get(i);
+                    dos.writeLong(t.time);
+                    dos.writeDouble(t.data[0]);
+                    dos.writeDouble(t.data[1]);
+                    dos.writeDouble(t.data[2]);
+                }
+                Log.d(TAG, "Written");
+                dos.flush();
+                bs.getInputStream().read();
+                dos.close();
+            }catch(Exception e){
+
+            }
+            return new ConnectionThread();
+        }
+        @Override
+        public void run() {
+            try {
+                BluetoothAdapter.getDefaultAdapter().setName("Weight Bar 1");
+                BluetoothServerSocket bss = BluetoothAdapter.getDefaultAdapter().listenUsingInsecureRfcommWithServiceRecord("ccv_prototype", UUID.fromString(SUUID));
+                Log.d(TAG,"Listening");
+                bs = bss.accept();
+                Log.d(TAG,"Accepted");
+
+            } catch(Exception e){
+
+            }
         }
     }
 }
