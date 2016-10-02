@@ -2,12 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="edu.nd.raisethebar">
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-feature
         android:name="android.hardware.Sensor"/>
     <uses-feature
         android:name="android.hardware.SensorEvent"/>
     <uses-feature
         android:name="android.bluetooth"/>
+    <permission
+        android:name="android.permission.BLUETOOTH"
+        android:label="BLUETOOTH" />
+    <permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -21,13 +27,20 @@
         </activity>
         <activity android:name=".SlaveActivity">
         </activity>
-        <activity android:name=".MainActivity">
-            <intent-filter>
+        <activity android:name=".MainActivity" android:label="Single Device">
+            <intent-filter android:label="Single Device">
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+        </activity>
+        <activity android:name=".DeviceDialog"></activity>
+        <activity android:name=".ChooserActivity" android:label="Raise the Bar">
+            <intent-filter android:label="Raise the Bar">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

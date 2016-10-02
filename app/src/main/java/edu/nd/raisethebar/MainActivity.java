@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_slave);
+        setContentView(R.layout.activity_record_weight);
 
         Button StartClick = (Button) findViewById(R.id.StartClick);
         StartClick.setOnClickListener(this);
