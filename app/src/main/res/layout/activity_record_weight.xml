@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app2="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_record_weight"
     android:layout_width="match_parent"
@@ -10,18 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="?android:attr/colorBackground"
     tools:background="@color/colorPrimaryDark">
-
-    <Button
-        android:text="Start Recording"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/StartClick"
-        android:layout_marginBottom="130dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="?android:attr/colorPressedHighlight"
-        android:textAppearance="@style/TextAppearance.AppCompat.Button"
-        android:textColor="@android:color/background_light" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -39,4 +28,30 @@
         android:layout_centerHorizontal="true"
         android:textColorHighlight="@android:color/background_light" />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app2:srcCompat="@mipmap/logo"
+        android:id="@+id/imageView3"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="63dp"
+        android:layout_above="@+id/StartClick"
+        android:layout_alignParentStart="true"
+        android:foregroundGravity="center_vertical" />
+
+    <Button
+        android:text="Start Recording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/StartClick"
+        android:background="@color/colorPrimary"
+        android:textSize="30sp"
+        android:textColor="@android:color/background_light"
+        android:soundEffectsEnabled="true"
+        android:height="100dp"
+        android:layout_marginBottom="39dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:foregroundGravity="center_vertical" />
 </RelativeLayout>
+

@@ -18,7 +18,9 @@
         android:id="@+id/textForm"
         android:textSize="36sp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:foregroundGravity="center_vertical" />
 
     <TextView
         android:text="m/s"
@@ -30,13 +32,6 @@
         android:layout_alignBottom="@+id/textMaxSpeed"
         android:layout_toEndOf="@+id/textMaxSpeed"
         android:layout_marginStart="17dp" />
-
-    <com.jjoe64.graphview.GraphView
-        android:layout_width="match_parent"
-        android:layout_height="200dip"
-        android:id="@+id/graph"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
 
     <TextView
         android:text="seconds"
@@ -55,7 +50,8 @@
         android:textColor="@android:color/black"
         android:layout_above="@+id/textStaticSpeed"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="32dp"
+        android:gravity="center_vertical" />
 
     <TextView
         android:text="Maximum speed:"
@@ -65,7 +61,9 @@
         android:textSize="24sp"
         android:textColor="@android:color/black"
         android:layout_above="@+id/textMaxSpeed"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:foregroundGravity="center_vertical" />
 
     <TextView
         android:text="0"
@@ -74,7 +72,8 @@
         android:id="@+id/textMaxSpeed"
         android:textSize="36sp"
         android:layout_above="@+id/textForm"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:foregroundGravity="center_vertical" />
 
     <TextView
         android:text="0"
@@ -87,7 +86,8 @@
         android:layout_centerInParent="false"
         android:layout_above="@+id/textMaxSpeed"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="18dp" />
+        android:layout_marginBottom="18dp"
+        android:foregroundGravity="center_vertical" />
 
     <TextView
         android:text="Weight:"
@@ -97,7 +97,8 @@
         android:textSize="30sp"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="19dp" />
+        android:layout_marginStart="19dp"
+        android:gravity="center" />
 
     <TextView
         android:text="lbs."
@@ -122,6 +123,13 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:gravity="center" />
+
+    <com.jjoe64.graphview.GraphView
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        android:id="@+id/graph"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
