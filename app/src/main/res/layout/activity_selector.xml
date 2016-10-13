@@ -11,21 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorPrimary">
 
-    <Button
-        android:text="Start New Session"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editWeight"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="155dp"
-        android:id="@+id/button4"
-        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
-        android:elevation="24dp"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="30sp"
-        android:height="75dp"
-        android:foregroundGravity="center_vertical" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,13 +43,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="27dp"
-        android:id="@+id/button_new_session"
+        android:id="@+id/button_previous_session"
         style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
         android:elevation="1dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="25.5sp"
         android:height="75dp"
-        android:layout_below="@+id/button4"
-        android:layout_alignEnd="@+id/button4"
-        android:foregroundGravity="center_vertical" />
+        android:layout_below="@+id/button_new_session"
+        android:layout_alignEnd="@+id/button_new_session"
+        android:foregroundGravity="center_vertical"
+        android:onClick="previous_session" />
+
+    <Button
+        android:text="Start New Session"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="155dp"
+        android:id="@+id/button_new_session"
+        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
+        android:elevation="24dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="30sp"
+        android:height="75dp"
+        android:foregroundGravity="center_vertical"
+        android:layout_below="@+id/editWeight"
+        android:layout_centerHorizontal="true"
+        android:onClick="new_session" />
 </RelativeLayout>

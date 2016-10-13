@@ -31,7 +31,7 @@
         <activity android:name=".MainActivity" android:label="Single Device">
         </activity>
         
-        <activity android:name=".Splash">
+        <activity android:name=".SelectorActivity$Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
