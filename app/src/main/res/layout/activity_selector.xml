@@ -11,26 +11,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorPrimary">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editWeight"
-        tools:text=" "
-        android:hint="Enter Weight: "
-        android:layout_marginTop="66dp"
-        android:gravity="center_vertical|center_horizontal|fill_horizontal"
-        android:textColor="?attr/colorControlNormal"
-        android:contextClickable="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textColorHighlight="@android:color/background_light" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/logo"
+        android:src="@drawable/logo"
         android:id="@+id/imageView"
         android:maxWidth="@android:dimen/app_icon_size"
         android:layout_marginBottom="270dp"
@@ -42,23 +26,21 @@
         android:text="View Previous Session"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
         android:id="@+id/button_previous_session"
         style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
         android:elevation="1dp"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="25.5sp"
         android:height="75dp"
-        android:layout_below="@+id/button_new_session"
-        android:layout_alignEnd="@+id/button_new_session"
         android:foregroundGravity="center_vertical"
-        android:onClick="previous_session" />
+        android:onClick="previous_session"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:text="Start New Session"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="155dp"
         android:id="@+id/button_new_session"
         style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
         android:elevation="24dp"
@@ -66,7 +48,8 @@
         android:textSize="30sp"
         android:height="75dp"
         android:foregroundGravity="center_vertical"
-        android:layout_below="@+id/editWeight"
+        android:onClick="new_session"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:onClick="new_session" />
+        android:layout_marginBottom="124dp" />
 </RelativeLayout>
