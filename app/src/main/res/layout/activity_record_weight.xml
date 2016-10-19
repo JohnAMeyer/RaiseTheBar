@@ -31,7 +31,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app2:srcCompat="@mipmap/logo"
+        app2:srcCompat="@mipmap/logo_old"
         android:id="@+id/imageView3"
         android:background="@color/colorPrimary"
         android:layout_marginBottom="63dp"

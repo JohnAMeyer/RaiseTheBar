@@ -30,7 +30,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:theme="@style/AppTheme"
         tools:ignore="HardcodedDebugMode">
         <activity android:name=".MasterActivity" />
         <activity android:name=".SlaveActivity" />
@@ -48,13 +48,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".DeviceDialog" />
-        <activity
-            android:name=".ChooserActivity"
-            android:label="Raise the Bar" />
         <activity android:name=".MachineSelectorActivity" />
-        <activity android:name=".RecordActivity" />
+        <activity android:name=".RecordActivity" android:noHistory="true" />
         <activity android:name=".SessionActivity" />
+        <activity android:name=".CalendarActivity" />
+        <activity android:name=".GymSelectorActivity" />
         <activity
+            android:noHistory="true"
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"></activity>
     </application>

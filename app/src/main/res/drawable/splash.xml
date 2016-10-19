@@ -4,8 +4,8 @@
         android:drawable="@color/colorPrimary"/>
     <item>
         <bitmap
-            android:gravity="center_vertical|fill_horizontal"
+            android:gravity="center"
             android:tileMode="disabled"
-            android:src="@drawable/logobit"/>
+            android:src="@mipmap/logo"/>
     </item>
 </layer-list>

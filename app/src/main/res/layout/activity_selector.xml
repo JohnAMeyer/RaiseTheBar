@@ -27,29 +27,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button_previous_session"
-        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
-        android:elevation="1dp"
-        android:textColor="@color/colorPrimaryDark"
         android:textSize="25.5sp"
         android:height="75dp"
         android:foregroundGravity="center_vertical"
-        android:onClick="previous_session"
+        android:onClick="previousSession"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:text="Start New Session"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button_new_session"
-        style="@android:style/Widget.DeviceDefault.Light.Button.Inset"
-        android:elevation="24dp"
-        android:textColor="@color/colorPrimaryDark"
         android:textSize="30sp"
         android:height="75dp"
         android:foregroundGravity="center_vertical"
-        android:onClick="new_session"
+        android:onClick="newSession"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="124dp" />
+        android:layout_marginBottom="124dp"
+        style="@style/Widget.AppCompat.Button" />
 </RelativeLayout>
+<!--
+        android:elevation="24dp"
+        android:textColor="@color/colorPrimaryDark"
+style="@android:style/Widget.DeviceDefault.Light.Button.Inset" -->
