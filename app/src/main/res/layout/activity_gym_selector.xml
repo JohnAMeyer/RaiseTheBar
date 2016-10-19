@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_light">
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -16,24 +15,23 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:foregroundGravity="top|center_vertical" />
-
     <TextView
         android:text="Select Gym: "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="107dp"
-        android:id="@+id/static_machine_select"
+        android:id="@+id/static_gym_text"
         android:textColor="@android:color/darker_gray"
         android:textSize="50sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
         android:foregroundGravity="center_vertical" />
-
     <ListView
+        android:id="@+id/gym_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/static_machine_select"
+        android:layout_below="@+id/static_gym_text"
         android:layout_marginTop="25dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
