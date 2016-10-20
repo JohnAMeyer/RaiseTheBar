@@ -1,0 +1,22 @@
+{
+  "machines": [
+    {
+      "id": "1",
+      "name": "Weight Bar 1",
+      "type": "bar",
+      "MAC" : "B0:B4:48:C9:A2:06"
+    },
+    {
+      "id": "2",
+      "name": "Weight Bar 2",
+      "type": "bar",
+      "MAC" : "B0:B4:48:C9:A2:06"
+    },
+    {
+      "id": "3",
+      "name": "Weight Bar 3",
+      "type": "bar",
+      "MAC" : "B0:B4:48:C9:A2:06"
+    }
+  ]
+}

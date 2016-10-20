@@ -1,0 +1,19 @@
+{
+  "gyms": [
+    {
+      "id": "1",
+      "name": "Joe's Gym",
+      "distance": ".1 miles"
+    },
+    {
+      "id": "2",
+      "name": "Ralph's Gym",
+      "distance": ".2 miles"
+    },
+    {
+      "id": "3",
+      "name": "Greg's Gym",
+      "distance": ".3 miles"
+    }
+  ]
+}
