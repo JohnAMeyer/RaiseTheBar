@@ -12,23 +12,7 @@
     android:background="?android:attr/colorBackground"
     tools:background="@color/colorPrimaryDark">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editWeight"
-        tools:text=" "
-        android:hint="Enter Weight: "
-        android:layout_marginTop="66dp"
-        android:gravity="center_vertical|center_horizontal|fill_horizontal"
-        android:textColor="?attr/colorControlNormal"
-        android:contextClickable="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textColorHighlight="@android:color/background_light" />
-
-    <ImageView
+    <!--ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app2:srcCompat="@mipmap/logo_old"
@@ -37,7 +21,7 @@
         android:layout_marginBottom="63dp"
         android:layout_above="@+id/StartClick"
         android:layout_alignParentStart="true"
-        android:foregroundGravity="center_vertical" />
+        android:foregroundGravity="center_vertical" /-->
 
     <Button
         android:text="Start Recording"
@@ -52,6 +36,23 @@
         android:layout_marginBottom="39dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:foregroundGravity="center_vertical" />
+        android:foregroundGravity="center_vertical"
+        android:onClick="toggle"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/editWeight"
+        tools:text=" "
+        android:hint="Enter Weight: "
+        android:gravity="center_vertical|center_horizontal|fill_horizontal"
+        android:textColor="?attr/colorControlNormal"
+        android:contextClickable="true"
+        android:textColorHighlight="@android:color/background_light"
+        android:layout_above="@+id/StartClick"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp" />
 </RelativeLayout>
 

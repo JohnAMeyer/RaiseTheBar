@@ -3,22 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="edu.nd.raisethebar">
 
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <uses-feature android:name="android.hardware.Sensor" />
-    <uses-feature android:name="android.hardware.SensorEvent" />
-    <uses-feature android:name="android.bluetooth" />
-
-    <permission
-        android:name="android.permission.BLUETOOTH"
-        android:label="BLUETOOTH" />
-    <permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-feature android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-feature android:name="android.hardware.bluetooth_le" />
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -57,6 +46,8 @@
             android:noHistory="true"
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"></activity>
+        <service android:name=".BluetoothBackground" >
+        </service>
     </application>
 
 </manifest>

@@ -51,14 +51,11 @@ public class GymSelectorActivity extends AppCompatActivity {
         vid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(ct, MachineSelectorActivity.class);
-                //If you wanna send any data to nextActicity.class you can use
                 try {
-                    Log.d(TAG,"Clicked " + arr.getJSONObject(position).toString());
                     i.putExtra("JSON", arr.getJSONObject(position).toString());
                 }catch (Exception e){
                     Log.e(TAG,"OnClickHandler",e);
                 }
-
                 startActivity(i);
             }
         });

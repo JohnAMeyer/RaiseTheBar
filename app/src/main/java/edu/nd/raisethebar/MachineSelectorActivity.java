@@ -1,5 +1,11 @@
 package edu.nd.raisethebar;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.Tag;
@@ -10,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +38,6 @@ public class MachineSelectorActivity extends AppCompatActivity {
         } catch(JSONException e){
             Log.e(TAG,"JSON Error",e);
         }
-        Log.d(TAG,gymId+"");
 
         JSONArray result = null;
         String[] items = null;
@@ -56,13 +62,15 @@ public class MachineSelectorActivity extends AppCompatActivity {
         final JSONArray arr = result;
         vid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                String MAC = null;
                 Intent i = new Intent(ct, RecordActivity.class);
                 try {
+                    MAC = arr.getJSONObject(position).getString("MAC");
                     i.putExtra("JSON", arr.getJSONObject(position).toString());
                 }catch (Exception e){
                     Log.e(TAG,"OnClickHandler",e);
                 }
+                Toast.makeText(ct, getString(R.string.attempt_bluetooth), Toast.LENGTH_LONG).show();
 
                 startActivity(i);
             }

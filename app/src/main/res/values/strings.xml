@@ -14,4 +14,6 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="bluetooth_needed">Bluetooth is required for this App to work.</string>
+    <string name="attempt_bluetooth">Attempting to connect to device...</string>
 </resources>
