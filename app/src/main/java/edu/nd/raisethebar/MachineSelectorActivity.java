@@ -54,7 +54,7 @@ public class MachineSelectorActivity extends AppCompatActivity {
 
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
         //populate list with items from gyms.php - may need to use a more advanced array adaptor if simple text does not work
-        ListView vid = (ListView) this.findViewById(R.id.machine_list);
+        ListView vid = (ListView) findViewById(R.id.machine_list);
         vid.setAdapter(itemsAdapter);
 
         //on item select, fire new activity

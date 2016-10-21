@@ -1,5 +1,6 @@
 package edu.nd.raisethebar;
 
+import android.app.Activity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,6 +17,8 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
@@ -43,9 +46,14 @@ public class BluetoothBackground extends Service {
     private static final UUID UUID_MOV_CONF = UUID.fromString("f000aa82-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_PERI = UUID.fromString("f000aa83-0451-4000-b000-000000000000");
     private static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final byte[] ALL_MOTION = {0b1111111,0b0};
+    private static final byte[] ALL_MOTION = {0b01111111,0b0};
     private static final byte[] NOTIFY = {0b1,0b0};
     private Queue<Runnable> writes = new LinkedList<>();
+    private ArrayList<Tuple> acc = new ArrayList<>();
+    private ArrayList<Tuple> gyr = new ArrayList<>();
+    private ArrayList<Tuple> mag = new ArrayList<>();
+    private boolean isRecording = false;
+    private RecordActivity a;
 
 
     public class LocalBinder extends Binder {
@@ -66,23 +74,31 @@ public class BluetoothBackground extends Service {
         }
         bc = new BLECallback();
         bg = bd.connectGatt(this,true, bc);
-
         return b;
     }
 
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+    public void startRecording(){
+        isRecording = true;
+    }
+    public ArrayList<Tuple>[] stopRecording(){
+        isRecording = false;
+        ArrayList<Tuple>[] arr = new ArrayList[3];
+        arr[0]=acc;
+        arr[1]=gyr;
+        arr[2]=mag;
+        return arr;
     }
 
     private class BLECallback extends BluetoothGattCallback {
+        private boolean hasReceived = false;
+
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.d(TAG,"Connected");
                 gatt.discoverServices();
+                a.progress(15);
             }else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.d(TAG,"Disconnected");
             }
@@ -103,6 +119,8 @@ public class BluetoothBackground extends Service {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            if(!hasReceived)a.progress(100);
+            hasReceived = true;
             super.onCharacteristicChanged(gatt, characteristic);
             //Data received
             byte[] data = characteristic.getValue();
@@ -118,6 +136,12 @@ public class BluetoothBackground extends Service {
             float magY =  magConvert((data[15] <<8) + data[14]);
             float magZ =  magConvert((data[17] <<8) + data[16]);
 
+            if(isRecording) {
+                long time = System.currentTimeMillis();
+                acc.add(new Tuple(new float[]{accX,accY,accZ},time));
+                gyr.add(new Tuple(new float[]{gyrX,gyrY,gyrZ},time));
+                mag.add(new Tuple(new float[]{magX,magY,magZ},time));
+            }
             Log.d(TAG,"{"+gyrX + " " + gyrY + " " + gyrZ+"},{"+accX + " " + accY + " " + accZ+"},{"+magX + " " + magY + " " + magZ+"}");
         }
 
@@ -132,7 +156,7 @@ public class BluetoothBackground extends Service {
         public void onServicesDiscovered(final BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             Log.d(TAG, "Discovered Services");
-
+            a.progress(30);
 
             final BluetoothGattService motionService = gatt.getService(UUID_MOV_SERV);
             final BluetoothGattCharacteristic motionConfigChar = motionService.getCharacteristic(UUID_MOV_CONF);
@@ -141,16 +165,19 @@ public class BluetoothBackground extends Service {
             writes.add(new Runnable() {
                 public void run() {
                     Log.d(TAG, "Local Enable: " + gatt.setCharacteristicNotification(motionDataChar, true));//Enabled locally
+                    a.progress(40);
 
                     BluetoothGattDescriptor config = motionDataChar.getDescriptor(CCC);
                     config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     Log.d(TAG, "Remote Enable: " + gatt.writeDescriptor(config));//Enabled remotely
+                    a.progress(50);
                 }
             });
             writes.add(new Runnable() {
                 public void run() {
                     motionConfigChar.setValue(ALL_MOTION);
                     Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionConfigChar));
+                    a.progress(70);
                 }
             });
 
@@ -158,6 +185,9 @@ public class BluetoothBackground extends Service {
         }
     }
 
+    public void register(Activity a){
+        this.a = (RecordActivity) a;
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -170,6 +200,6 @@ public class BluetoothBackground extends Service {
         return (float)((data * 1.0D) / (32768/2));
     }
     float magConvert(int data){
-        return 1.0F * data;
+        return 1.0F * data * (2000f / 65536f); // documentation and code disagree here
     }
 }
