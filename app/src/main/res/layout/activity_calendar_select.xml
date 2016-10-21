@@ -6,14 +6,10 @@
     android:background="@android:color/background_light"
     android:orientation="vertical">
 
-
-    <CalendarView
+    <edu.nd.raisethebar.SessionCalendarView
+        android:id="@+id/calendar_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="82dp"
-        android:id="@+id/calendarView" />
-
-
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

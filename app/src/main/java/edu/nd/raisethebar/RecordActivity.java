@@ -43,6 +43,7 @@ public class RecordActivity extends AppCompatActivity {
                         ((ProgressBar) findViewById(R.id.connect_progress)).setProgress(i, true);
                     else
                         ((ProgressBar) findViewById(R.id.connect_progress)).setProgress(i);
+                    findViewById(R.id.is_device_on).setVisibility(View.INVISIBLE);
                 }
             }
         });
