@@ -22,6 +22,9 @@ import java.util.Queue;
 import java.util.UUID;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static android.view.View.X;
+import static android.view.View.Y;
+import static android.view.View.Z;
 import static java.lang.Thread.currentThread;
 import static java.security.CryptoPrimitive.MAC;
 import static java.util.UUID.fromString;
@@ -40,7 +43,7 @@ public class BluetoothBackground extends Service {
     private static final UUID UUID_MOV_CONF = UUID.fromString("f000aa82-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_PERI = UUID.fromString("f000aa83-0451-4000-b000-000000000000");
     private static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final byte[] ALL_MOTION = {0b1111110,0b0};
+    private static final byte[] ALL_MOTION = {0b1111111,0b0};
     private static final byte[] NOTIFY = {0b1,0b0};
     private Queue<Runnable> writes = new LinkedList<>();
 
@@ -94,14 +97,35 @@ public class BluetoothBackground extends Service {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.d(TAG,"SUCCESS" + (status==BluetoothGatt.GATT_SUCCESS));
+            Log.d(TAG,"Written: " + (status==BluetoothGatt.GATT_SUCCESS));
             if(writes.size()>0) new Handler(getMainLooper()).post(writes.poll());
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Log.d(TAG,characteristic.getValue().toString());
+            //Data received
+            byte[] data = characteristic.getValue();
+            float gyrX =  gyroConvert((data[1] <<8) + data[0]);
+            float gyrY =  gyroConvert((data[3] <<8) + data[2]);
+            float gyrZ =  gyroConvert((data[5] <<8) + data[4]);
+
+            float accX =  accConvert((data[7] <<8) + data[6]);
+            float accY =  accConvert((data[9] <<8) + data[8]);
+            float accZ =  accConvert((data[11] <<8) + data[10]);
+
+            float magX =  magConvert((data[13] <<8) + data[12]);
+            float magY =  magConvert((data[15] <<8) + data[14]);
+            float magZ =  magConvert((data[17] <<8) + data[16]);
+
+            Log.d(TAG,"{"+gyrX + " " + gyrY + " " + gyrZ+"},{"+accX + " " + accY + " " + accZ+"},{"+magX + " " + magY + " " + magZ+"}");
+        }
+
+        @Override
+        public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+            super.onDescriptorWrite(gatt, descriptor, status);
+            Log.d(TAG,"Written: " + (status==BluetoothGatt.GATT_SUCCESS));
+            if(writes.size()>0) new Handler(getMainLooper()).post(writes.poll());
         }
 
         @Override
@@ -114,13 +138,6 @@ public class BluetoothBackground extends Service {
             final BluetoothGattCharacteristic motionConfigChar = motionService.getCharacteristic(UUID_MOV_CONF);
             final BluetoothGattCharacteristic motionDataChar = motionService.getCharacteristic(UUID_MOV_DATA);
 
-
-            writes.add(new Runnable() {
-                public void run() {
-                    motionConfigChar.setValue(ALL_MOTION);
-                    Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionConfigChar));
-                }
-            });
             writes.add(new Runnable() {
                 public void run() {
                     Log.d(TAG, "Local Enable: " + gatt.setCharacteristicNotification(motionDataChar, true));//Enabled locally
@@ -128,6 +145,12 @@ public class BluetoothBackground extends Service {
                     BluetoothGattDescriptor config = motionDataChar.getDescriptor(CCC);
                     config.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     Log.d(TAG, "Remote Enable: " + gatt.writeDescriptor(config));//Enabled remotely
+                }
+            });
+            writes.add(new Runnable() {
+                public void run() {
+                    motionConfigChar.setValue(ALL_MOTION);
+                    Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionConfigChar));
                 }
             });
 
@@ -139,5 +162,14 @@ public class BluetoothBackground extends Service {
     public void onDestroy() {
         super.onDestroy();
         bg.close();
+    }
+    float gyroConvert(int data){
+        return (float)((data * 1.0D) / (65536D / 500D));
+    }
+    float accConvert(int data){//assumes acceleration in range -2, +2
+        return (float)((data * 1.0D) / (32768/2));
+    }
+    float magConvert(int data){
+        return 1.0F * data;
     }
 }
