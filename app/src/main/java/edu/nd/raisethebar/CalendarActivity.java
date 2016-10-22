@@ -1,5 +1,6 @@
 package edu.nd.raisethebar;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +46,6 @@ public class CalendarActivity extends AppCompatActivity {
         } catch (ParseException e){
             Log.e(TAG, "Date Parsing Error", e);
         }
-        //events.add(new Date());
 
         SessionCalendarView cv = ((SessionCalendarView)findViewById(R.id.calendar_view));
         cv.updateCalendar(events);
@@ -61,10 +61,9 @@ public class CalendarActivity extends AppCompatActivity {
             @Override
             public void onDayClick(Date date) {
                 DateFormat df = SimpleDateFormat.getDateInstance();
-                Toast.makeText(CalendarActivity.this, df.format(date), Toast.LENGTH_SHORT).show();
-                Log.d(TAG,df.format(date));
+                Intent i = new Intent(CalendarActivity.this,SessionActivity.class).putExtra("date",df.format(date));
+                startActivity(i);
             }
         });
-        //will touch this later: not as important
     }
 }
