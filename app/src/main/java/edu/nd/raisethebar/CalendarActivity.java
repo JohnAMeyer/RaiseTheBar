@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by jack1 on 10/18/2016.
@@ -27,6 +28,9 @@ public class CalendarActivity extends AppCompatActivity {
     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
     private static final String MANY = "#66ff66";
     private static final String FEW = "#ffff99";
+    HashSet<String> set = new HashSet<>();
+    private DateFormat df = SimpleDateFormat.getDateInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,7 @@ public class CalendarActivity extends AppCompatActivity {
                 Date date = format.parse(result.getJSONObject(i).getString("date"));
                 Integer color = result.getJSONObject(i).getInt("sessions")>4?Color.parseColor(MANY):Color.parseColor(FEW);
                 events.put(date,color);
+                set.add(df.format(date));
             }
         } catch (JSONException | IOException e) {
             Log.e(TAG, "JSON/IO Error", e);
@@ -48,19 +53,19 @@ public class CalendarActivity extends AppCompatActivity {
         }
 
         SessionCalendarView cv = ((SessionCalendarView)findViewById(R.id.calendar_view));
-        cv.updateCalendar(events);
+        cv.setEvents(events);
 
         cv.setEventHandler(new SessionCalendarView.EventHandler(){
             @Override
             public void onDayLongPress(Date date){
-                DateFormat df = SimpleDateFormat.getDateInstance();
                 Toast.makeText(CalendarActivity.this, df.format(date), Toast.LENGTH_LONG).show();
-                Log.d(TAG,df.format(date));
+                Log.d(TAG, df.format(date));
             }
 
             @Override
             public void onDayClick(Date date) {
-                DateFormat df = SimpleDateFormat.getDateInstance();
+                if(!set.contains(df.format(date)))
+                    return;
                 Intent i = new Intent(CalendarActivity.this,SessionActivity.class).putExtra("date",df.format(date));
                 startActivity(i);
             }

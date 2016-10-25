@@ -1,6 +1,7 @@
 package edu.nd.raisethebar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,6 +55,8 @@ public class SessionActivity extends AppCompatActivity {
         vid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG,"Item No. " + position);
+                Intent i = new Intent(SessionActivity.this,SessionDisplayActivity.class).putExtra("reps",5);//TODO add other params here
+                startActivity(i);
             }
         });
     }

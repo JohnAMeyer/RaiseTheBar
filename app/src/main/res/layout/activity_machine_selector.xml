@@ -1,40 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light">
+    android:background="@android:color/background_light"
+    android:orientation="vertical">
+
     <TextView
-        android:text="Select Machine:"
-        android:layout_width="wrap_content"
+        android:text="@string/machine_list_title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="107dp"
         android:id="@+id/machine_select_text"
         android:textColor="@android:color/darker_gray"
-        android:textSize="50sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_vertical"
-        android:foregroundGravity="center_vertical" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo"
-        android:id="@+id/imageView5"
-        android:layout_marginLeft="150dp"
-        android:layout_marginBottom="454dp"
-        android:layout_marginRight="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:foregroundGravity="top|center_vertical" />
+        android:textSize="24sp"
+        android:gravity="center"/>
+
     <ListView
         android:id="@+id/machine_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/machine_select_text"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="30dp" />
-</RelativeLayout>
+        android:layout_height="match_parent"/>
+</LinearLayout>
 

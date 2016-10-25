@@ -1,5 +1,6 @@
 package edu.nd.raisethebar;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,11 +29,31 @@ public class RecordActivity extends AppCompatActivity {
     BluetoothBackground bb;
     BluetoothConnector bc;
     private boolean isRecording = false;
+    private final static int REQUEST_ENABLE_BT = 1;
+    private BluetoothAdapter ba;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connecting);
+        ba = BluetoothAdapter.getDefaultAdapter();
+        if (ba == null || !ba.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            this.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode==REQUEST_ENABLE_BT){
+            if(resultCode!=RESULT_OK){
+                Toast.makeText(this, getString(R.string.bluetooth_needed), Toast.LENGTH_LONG).show();
+                Log.d(TAG,"BT not activated");
+                finish();
+            } else {
+                startService();
+            }
+        }
     }
     public void progress(final int i){
         new Handler(getMainLooper()).post(new Runnable() {
@@ -50,8 +73,13 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
+        if(ba != null && ba.isEnabled())
+            startService();
+    }
+
+    private void startService() {
         String mac = null;
         try{
             mac = new JSONObject(getIntent().getStringExtra("JSON")).getString("MAC");
@@ -64,18 +92,26 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        unbindService(bc);
-        bc = null;
+    protected void onStop() {
+        super.onStop();
+        if(bc!=null) {
+            unbindService(bc);
+            bc = null;
+        }
     }
 
     public void toggle(View v){
         if(isRecording){
             ArrayList<Tuple>[] data = bb.stopRecording();
+            isRecording = false;
             //process
+            Intent i = new Intent(this,SessionDisplayActivity.class).putExtra("reps",5);//TODO add other params here
+            startActivity(i);
+            finish();
         } else {
             bb.startRecording();
+            ((Button)v).setText("Stop Recording");
+            isRecording = true;
         }
     }
 

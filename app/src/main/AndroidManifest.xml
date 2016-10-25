@@ -4,9 +4,9 @@
     package="edu.nd.raisethebar">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
     <uses-feature android:name="android.hardware.bluetooth_le" />
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -38,16 +38,18 @@
         </activity>
         <activity android:name=".DeviceDialog" />
         <activity android:name=".MachineSelectorActivity" />
-        <activity android:name=".RecordActivity" android:noHistory="true" />
+        <activity android:name=".RecordActivity" />
         <activity android:name=".SessionActivity" />
         <activity android:name=".CalendarActivity" />
         <activity android:name=".GymSelectorActivity" />
         <activity
-            android:noHistory="true"
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"></activity>
-        <service android:name=".BluetoothBackground" >
-        </service>
+            android:label="@string/title_activity_login"
+            android:noHistory="true" />
+
+        <service android:name=".BluetoothBackground" />
+
+        <activity android:name=".SessionDisplayActivity"></activity>
     </application>
 
 </manifest>

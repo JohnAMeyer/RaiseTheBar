@@ -70,7 +70,6 @@ public class MachineSelectorActivity extends AppCompatActivity {
                 }catch (Exception e){
                     Log.e(TAG,"OnClickHandler",e);
                 }
-                Toast.makeText(ct, getString(R.string.attempt_bluetooth), Toast.LENGTH_LONG).show();
 
                 startActivity(i);
             }

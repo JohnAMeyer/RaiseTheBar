@@ -7,8 +7,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,7 @@ public class SessionCalendarView extends LinearLayout {
     private ImageView btnNext;
     private TextView txtDate;
     private GridView grid;
+    private HashMap<Date, Integer> events;
 
     public SessionCalendarView(Context context){
         super(context);
@@ -94,6 +97,7 @@ public class SessionCalendarView extends LinearLayout {
             public void onClick(View v){
                 currentDate.add(Calendar.MONTH, -1);
                 updateCalendar();
+
             }
         });
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -120,18 +124,15 @@ public class SessionCalendarView extends LinearLayout {
             }
         });
     }
-
-    /**
-     * Display dates correctly in grid
-     */
-    public void updateCalendar(){
-        updateCalendar(null);
+    public void setEvents(@Nullable HashMap<Date,Integer> events){
+        this.events = events;
+        updateCalendar();
     }
 
     /**
      * Display dates correctly in grid
      */
-    public void updateCalendar(HashMap<Date,Integer> events){
+    private void updateCalendar(){
         ArrayList<Date> cells = new ArrayList<>();
         Calendar calendar = (Calendar)currentDate.clone();
 
@@ -187,7 +188,10 @@ public class SessionCalendarView extends LinearLayout {
             if (view == null)
                 view = inflater.inflate(R.layout.calendar_day, parent, false);
 
-            // if this day has an event, specify event image
+            // clear styling
+            ((TextView)view).setTypeface(null, Typeface.NORMAL);
+            ((TextView)view).setTextColor(Color.BLACK);
+
             //TODO change to background highlighting code
             if (eventDays != null){
                 for (Date eventDate : eventDays.keySet()){
@@ -198,10 +202,6 @@ public class SessionCalendarView extends LinearLayout {
                     }
                 }
             }
-
-            // clear styling
-            ((TextView)view).setTypeface(null, Typeface.NORMAL);
-            ((TextView)view).setTextColor(Color.BLACK);
 
             if (month != today.getMonth() || year != today.getYear()){
                 // if this day is outside current month, grey it out

@@ -188,11 +188,16 @@ public class BluetoothBackground extends Service {
     public void register(Activity a){
         this.a = (RecordActivity) a;
     }
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        bg.close();
+    public boolean onUnbind(Intent intent) {
+        if(bg!= null) {
+            bg.disconnect();
+            bg.close();
+        }
+        return super.onUnbind(intent);
     }
+
     float gyroConvert(int data){
         return (float)((data * 1.0D) / (65536D / 500D));
     }

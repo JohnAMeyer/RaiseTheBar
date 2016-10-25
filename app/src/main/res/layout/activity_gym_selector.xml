@@ -1,39 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light">
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo"
-        android:id="@+id/imageView4"
-        android:layout_marginLeft="150dp"
-        android:layout_marginBottom="454dp"
-        android:layout_marginRight="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:foregroundGravity="top|center_vertical" />
+    android:background="@android:color/background_light"
+    android:orientation="vertical">
     <TextView
-        android:text="Select Gym: "
-        android:layout_width="wrap_content"
+        android:text="@string/gym_list_title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="107dp"
         android:id="@+id/static_gym_text"
         android:textColor="@android:color/darker_gray"
-        android:textSize="50sp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_vertical"
-        android:foregroundGravity="center_vertical" />
+        android:textSize="24sp"
+        android:gravity="center"/>
+    <!-- TODO consider using expandablelistview and custom adapter? -->
+
+    <LinearLayout
+        android:id="@+id/prev_gyms_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="invisible">
+
+        <TextView
+            android:text="@string/prev_gym"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView5"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/prev_gyms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="@string/gym_near"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView6"
+            android:textSize="18sp" />
+    </LinearLayout>
+
     <ListView
         android:id="@+id/gym_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/static_gym_text"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="30dp" />
-</RelativeLayout>
+        android:layout_height="332dp"/>
+
+    <Button
+        android:text="@string/home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:onClick="home"/>
+</LinearLayout>
