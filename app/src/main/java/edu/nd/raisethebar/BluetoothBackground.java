@@ -136,13 +136,12 @@ public class BluetoothBackground extends Service {
             float magY =  magConvert((short)(((data[15] & 0xFF) << 8) | (data[14] & 0xFF)));
             float magZ =  magConvert((short)(((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
 
-            /*if(isRecording) {
+            if(isRecording) {
                 long time = System.currentTimeMillis();
                 acc.add(new Tuple(new float[]{accX,accY,accZ},time));
                 gyr.add(new Tuple(new float[]{gyrX,gyrY,gyrZ},time));
                 mag.add(new Tuple(new float[]{magX,magY,magZ},time));
-            }*/
-            Log.d(TAG,magX + " " + magY + " " + magZ);
+            }
         }
 
         @Override
@@ -218,6 +217,6 @@ public class BluetoothBackground extends Service {
         return data / (32768F/8F);
     }
     float magConvert(int data){
-        return 1.0F * data * (2000f / 65536f); // documentation and code disagree here
+        return data / (32768F/2450F); // documentation and code disagree here
     }
 }

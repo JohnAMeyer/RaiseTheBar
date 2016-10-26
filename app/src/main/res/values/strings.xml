@@ -25,4 +25,7 @@
     <string name="prev_gym">Previously Visited Gyms:</string>
     <string name="gym_near">Nearby Gyms:</string>
     <string name="home">\@Home</string>
+    <string name="regimens">Regimens</string>
+    <string name="view_prev_button">View Previous Session</string>
+    <string name="start_new_button">Start New Session</string>
 </resources>

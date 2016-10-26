@@ -11,32 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorPrimary">
 
-    <Button
-        android:text="View Previous Session"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_previous_session"
-        android:textSize="25.5sp"
-        android:height="75dp"
-        android:foregroundGravity="center_vertical"
-        android:onClick="previousSession"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
-
-    <Button
-        android:text="Start New Session"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_new_session"
-        android:textSize="30sp"
-        android:height="75dp"
-        android:foregroundGravity="center_vertical"
-        android:onClick="newSession"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="124dp"
-        style="@style/Widget.AppCompat.Button" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,8 +21,42 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="46dp" />
+
+    <Button
+        android:text="@string/regimens"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_regimen"
+        android:textSize="25.5sp"
+        android:height="75dp"
+        android:foregroundGravity="center_vertical"
+        android:onClick="regimens"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/view_prev_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_prev"
+        android:textSize="25.5sp"
+        android:height="75dp"
+        android:foregroundGravity="center_vertical"
+        android:onClick="previousSession"
+        android:layout_above="@+id/button_regimen"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="@string/start_new_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_new_session"
+        android:textSize="30sp"
+        android:height="75dp"
+        android:foregroundGravity="center_vertical"
+        android:onClick="newSession"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_above="@+id/button_prev"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
-<!--
-        android:elevation="24dp"
-        android:textColor="@color/colorPrimaryDark"
-style="@android:style/Widget.DeviceDefault.Light.Button.Inset" -->

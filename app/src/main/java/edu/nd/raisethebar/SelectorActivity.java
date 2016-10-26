@@ -41,4 +41,9 @@ public class SelectorActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void regimens(View view){
+        Intent intent = new Intent(this,RegimenActivity.class);
+        startActivity(intent);
+    }
+
 }
