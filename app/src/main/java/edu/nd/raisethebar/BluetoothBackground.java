@@ -46,7 +46,7 @@ public class BluetoothBackground extends Service {
     private static final UUID UUID_MOV_CONF = UUID.fromString("f000aa82-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_PERI = UUID.fromString("f000aa83-0451-4000-b000-000000000000");
     private static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final byte[] ALL_MOTION = {0b01111111,0b0};
+    private static final byte[] ALL_MOTION = {0b01000000,0b0};
     private static final byte[] NOTIFY = {0b1,0b0};
     private Queue<Runnable> writes = new LinkedList<>();
     private ArrayList<Tuple> acc = new ArrayList<>();
@@ -124,25 +124,25 @@ public class BluetoothBackground extends Service {
             super.onCharacteristicChanged(gatt, characteristic);
             //Data received
             byte[] data = characteristic.getValue();
-            float gyrX =  gyroConvert((data[1] <<8) + data[0]);
-            float gyrY =  gyroConvert((data[3] <<8) + data[2]);
-            float gyrZ =  gyroConvert((data[5] <<8) + data[4]);
+            float gyrX =  gyroConvert((short)(((data[1] & 0xFF) << 8) | (data[0] & 0xFF)));
+            float gyrY =  gyroConvert((short)(((data[3] & 0xFF) << 8) | (data[2] & 0xFF)));
+            float gyrZ =  gyroConvert((short)(((data[5] & 0xFF) << 8) | (data[4] & 0xFF)));
 
-            float accX =  accConvert((data[7] <<8) + data[6]);
-            float accY =  accConvert((data[9] <<8) + data[8]);
-            float accZ =  accConvert((data[11] <<8) + data[10]);
+            float accX =  accConvert((short)(((data[7] & 0xFF) << 8) | (data[6] & 0xFF)));
+            float accY =  accConvert((short)(((data[9] & 0xFF) << 8) | (data[8] & 0xFF)));
+            float accZ =  accConvert((short)(((data[11] & 0xFF) << 8) | (data[10] & 0xFF)));
 
-            float magX =  magConvert((data[13] <<8) + data[12]);
-            float magY =  magConvert((data[15] <<8) + data[14]);
-            float magZ =  magConvert((data[17] <<8) + data[16]);
+            float magX =  magConvert((short)(((data[13] & 0xFF) << 8) | (data[12] & 0xFF)));
+            float magY =  magConvert((short)(((data[15] & 0xFF) << 8) | (data[14] & 0xFF)));
+            float magZ =  magConvert((short)(((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
 
-            if(isRecording) {
+            /*if(isRecording) {
                 long time = System.currentTimeMillis();
                 acc.add(new Tuple(new float[]{accX,accY,accZ},time));
                 gyr.add(new Tuple(new float[]{gyrX,gyrY,gyrZ},time));
                 mag.add(new Tuple(new float[]{magX,magY,magZ},time));
-            }
-            Log.d(TAG,"{"+gyrX + " " + gyrY + " " + gyrZ+"},{"+accX + " " + accY + " " + accZ+"},{"+magX + " " + magY + " " + magZ+"}");
+            }*/
+            Log.d(TAG,magX + " " + magY + " " + magZ);
         }
 
         @Override
@@ -175,14 +175,27 @@ public class BluetoothBackground extends Service {
             });
             writes.add(new Runnable() {
                 public void run() {
+                    motionService.getCharacteristic(UUID_MOV_PERI).setValue(new byte[]{0b0});
+                    Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionService.getCharacteristic(UUID_MOV_PERI)));
+                }
+            });
+            writes.add(new Runnable() {
+                public void run() {
                     motionConfigChar.setValue(ALL_MOTION);
                     Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionConfigChar));
                     a.progress(70);
                 }
             });
-
             new Handler(getMainLooper()).post(writes.poll());
         }
+    }
+
+    private String string(byte[] data) {
+        String s = "";
+        for(byte b : data){
+            s+=b+" ,";
+        }
+        return s;
     }
 
     public void register(Activity a){
@@ -198,11 +211,11 @@ public class BluetoothBackground extends Service {
         return super.onUnbind(intent);
     }
 
-    float gyroConvert(int data){
-        return (float)((data * 1.0D) / (65536D / 500D));
+    float gyroConvert(short data){
+        return (float)data/(32768F/500F);//((data * 1.0D) / (65536D / 500D));
     }
     float accConvert(int data){//assumes acceleration in range -2, +2
-        return (float)((data * 1.0D) / (32768/2));
+        return data / (32768F/8F);
     }
     float magConvert(int data){
         return 1.0F * data * (2000f / 65536f); // documentation and code disagree here

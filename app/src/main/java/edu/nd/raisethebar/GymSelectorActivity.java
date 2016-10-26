@@ -49,7 +49,7 @@ public class GymSelectorActivity extends AppCompatActivity {
         vid.setAdapter(itemsAdapter);
 
         //TODO previous gyms
-        boolean prev = true;
+        boolean prev = false;
         if(prev) {
             LinearLayout l = (LinearLayout) findViewById(R.id.prev_gyms_layout);
             l.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
