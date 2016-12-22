@@ -14,23 +14,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.UUID;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-import static android.view.View.X;
-import static android.view.View.Y;
-import static android.view.View.Z;
-import static java.lang.Thread.currentThread;
-import static java.security.CryptoPrimitive.MAC;
-import static java.util.UUID.fromString;
 
 /**
  * Created by jack1 on 10/20/2016.
@@ -38,16 +27,17 @@ import static java.util.UUID.fromString;
 
 public class BluetoothBackground extends Service {
     private static final String TAG = "RTB-BluetoothBackground";
-    BluetoothDevice bd;
-    BluetoothGatt bg;
-    private BLECallback bc;
     private static final UUID UUID_MOV_SERV = UUID.fromString("f000aa80-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_DATA = UUID.fromString("f000aa81-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_CONF = UUID.fromString("f000aa82-0451-4000-b000-000000000000");
     private static final UUID UUID_MOV_PERI = UUID.fromString("f000aa83-0451-4000-b000-000000000000");
     private static final UUID CCC = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private static final byte[] ALL_MOTION = {0b01000000,0b0};
-    private static final byte[] NOTIFY = {0b1,0b0};
+    private static final byte[] ALL_MOTION = {0b01111111, 0b0};
+    private static final byte[] NOTIFY = {0b1, 0b0};
+    BluetoothDevice bd;
+    BluetoothGatt bg;
+    Binder b = new LocalBinder();
+    private BLECallback bc;
     private Queue<Runnable> writes = new LinkedList<>();
     private ArrayList<Tuple> acc = new ArrayList<>();
     private ArrayList<Tuple> gyr = new ArrayList<>();
@@ -55,13 +45,6 @@ public class BluetoothBackground extends Service {
     private boolean isRecording = false;
     private RecordActivity a;
 
-
-    public class LocalBinder extends Binder {
-        BluetoothBackground getService() {
-            return BluetoothBackground.this;
-        }
-    }
-    Binder b = new LocalBinder();
     @Override
     public IBinder onBind(Intent intent) {
         BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
@@ -73,20 +56,60 @@ public class BluetoothBackground extends Service {
             //how to handle softly?
         }
         bc = new BLECallback();
-        bg = bd.connectGatt(this,true, bc);
+        bg = bd.connectGatt(this, true, bc);
         return b;
     }
 
-    public void startRecording(){
+    public void startRecording() {
         isRecording = true;
     }
-    public ArrayList<Tuple>[] stopRecording(){
+
+    public ArrayList<Tuple>[] stopRecording() {
         isRecording = false;
         ArrayList<Tuple>[] arr = new ArrayList[3];
-        arr[0]=acc;
-        arr[1]=gyr;
-        arr[2]=mag;
+        arr[0] = acc;
+        arr[1] = gyr;
+        arr[2] = mag;
         return arr;
+    }
+
+    private String string(byte[] data) {
+        String s = "";
+        for (byte b : data) {
+            s += b + " ,";
+        }
+        return s;
+    }
+
+    public void register(Activity a) {
+        this.a = (RecordActivity) a;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if (bg != null) {
+            bg.disconnect();
+            bg.close();
+        }
+        return super.onUnbind(intent);
+    }
+
+    float gyroConvert(short data) {
+        return (float) data / (32768F / 500F);//((data * 1.0D) / (65536D / 500D));
+    }
+
+    float accConvert(int data) {//assumes acceleration in range -2, +2
+        return data / (32768F / 8F);
+    }
+
+    float magConvert(int data) {
+        return data / (32768F / 2450F); // documentation and code disagree here
+    }
+
+    public class LocalBinder extends Binder {
+        BluetoothBackground getService() {
+            return BluetoothBackground.this;
+        }
     }
 
     private class BLECallback extends BluetoothGattCallback {
@@ -96,59 +119,60 @@ public class BluetoothBackground extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.d(TAG,"Connected");
+                Log.d(TAG, "Connected");
                 gatt.discoverServices();
                 a.progress(15);
-            }else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.d(TAG,"Disconnected");
+            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                Log.d(TAG, "Disconnected");
             }
         }
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            Log.d(TAG,characteristic.toString());
+            Log.d(TAG, characteristic.toString());
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.d(TAG,"Written: " + (status==BluetoothGatt.GATT_SUCCESS));
-            if(writes.size()>0) new Handler(getMainLooper()).post(writes.poll());
+            Log.d(TAG, "Written: " + (status == BluetoothGatt.GATT_SUCCESS));
+            if (writes.size() > 0) new Handler(getMainLooper()).post(writes.poll());
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            if(!hasReceived)a.progress(100);
+            if (!hasReceived) a.progress(100);
             hasReceived = true;
             super.onCharacteristicChanged(gatt, characteristic);
-            //Data received
-            byte[] data = characteristic.getValue();
-            float gyrX =  gyroConvert((short)(((data[1] & 0xFF) << 8) | (data[0] & 0xFF)));
-            float gyrY =  gyroConvert((short)(((data[3] & 0xFF) << 8) | (data[2] & 0xFF)));
-            float gyrZ =  gyroConvert((short)(((data[5] & 0xFF) << 8) | (data[4] & 0xFF)));
 
-            float accX =  accConvert((short)(((data[7] & 0xFF) << 8) | (data[6] & 0xFF)));
-            float accY =  accConvert((short)(((data[9] & 0xFF) << 8) | (data[8] & 0xFF)));
-            float accZ =  accConvert((short)(((data[11] & 0xFF) << 8) | (data[10] & 0xFF)));
+            if (isRecording) {
+                byte[] data = characteristic.getValue();//Data received
+                float gyrX = gyroConvert((short) (((data[1] & 0xFF) << 8) | (data[0] & 0xFF)));
+                float gyrY = gyroConvert((short) (((data[3] & 0xFF) << 8) | (data[2] & 0xFF)));
+                float gyrZ = gyroConvert((short) (((data[5] & 0xFF) << 8) | (data[4] & 0xFF)));
 
-            float magX =  magConvert((short)(((data[13] & 0xFF) << 8) | (data[12] & 0xFF)));
-            float magY =  magConvert((short)(((data[15] & 0xFF) << 8) | (data[14] & 0xFF)));
-            float magZ =  magConvert((short)(((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
+                float accX = accConvert((short) (((data[7] & 0xFF) << 8) | (data[6] & 0xFF)));
+                float accY = accConvert((short) (((data[9] & 0xFF) << 8) | (data[8] & 0xFF)));
+                float accZ = accConvert((short) (((data[11] & 0xFF) << 8) | (data[10] & 0xFF)));
 
-            if(isRecording) {
+                float magX = magConvert((short) (((data[13] & 0xFF) << 8) | (data[12] & 0xFF)));
+                float magY = magConvert((short) (((data[15] & 0xFF) << 8) | (data[14] & 0xFF)));
+                float magZ = magConvert((short) (((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
+
                 long time = System.currentTimeMillis();
-                acc.add(new Tuple(new float[]{accX,accY,accZ},time));
-                gyr.add(new Tuple(new float[]{gyrX,gyrY,gyrZ},time));
-                mag.add(new Tuple(new float[]{magX,magY,magZ},time));
+                acc.add(new Tuple(new float[]{accX, accY, accZ}, time));
+                gyr.add(new Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
+                mag.add(new Tuple(new float[]{magX, magY, magZ}, time));
+                Log.d(TAG,time+";"+accX+";"+accY+";"+accZ+";"+gyrX+";"+gyrY+";"+gyrZ+";"+magX+";"+magY+";"+magZ);
             }
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
-            Log.d(TAG,"Written: " + (status==BluetoothGatt.GATT_SUCCESS));
-            if(writes.size()>0) new Handler(getMainLooper()).post(writes.poll());
+            Log.d(TAG, "Written: " + (status == BluetoothGatt.GATT_SUCCESS));
+            if (writes.size() > 0) new Handler(getMainLooper()).post(writes.poll());
         }
 
         @Override
@@ -174,7 +198,7 @@ public class BluetoothBackground extends Service {
             });
             writes.add(new Runnable() {
                 public void run() {
-                    motionService.getCharacteristic(UUID_MOV_PERI).setValue(new byte[]{0b0});
+                    motionService.getCharacteristic(UUID_MOV_PERI).setValue(new byte[]{0x0A});
                     Log.d(TAG, "Sensor on: " + gatt.writeCharacteristic(motionService.getCharacteristic(UUID_MOV_PERI)));
                 }
             });
@@ -187,36 +211,5 @@ public class BluetoothBackground extends Service {
             });
             new Handler(getMainLooper()).post(writes.poll());
         }
-    }
-
-    private String string(byte[] data) {
-        String s = "";
-        for(byte b : data){
-            s+=b+" ,";
-        }
-        return s;
-    }
-
-    public void register(Activity a){
-        this.a = (RecordActivity) a;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        if(bg!= null) {
-            bg.disconnect();
-            bg.close();
-        }
-        return super.onUnbind(intent);
-    }
-
-    float gyroConvert(short data){
-        return (float)data/(32768F/500F);//((data * 1.0D) / (65536D / 500D));
-    }
-    float accConvert(int data){//assumes acceleration in range -2, +2
-        return data / (32768F/8F);
-    }
-    float magConvert(int data){
-        return data / (32768F/2450F); // documentation and code disagree here
     }
 }

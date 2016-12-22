@@ -7,9 +7,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 
 import static android.R.attr.value;
 
@@ -18,7 +24,7 @@ import static android.R.attr.value;
  */
 
 public class LoginActivity extends AppCompatActivity {
-
+    private static final String TAG = "RTB-Login";
     private SharedPreferences pref;
 
     @Override
