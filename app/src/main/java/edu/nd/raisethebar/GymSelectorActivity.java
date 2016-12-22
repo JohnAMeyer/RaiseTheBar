@@ -12,11 +12,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +28,9 @@ import java.net.URL;
 import java.util.HashMap;
 
 import static android.R.attr.key;
+import static android.R.attr.name;
 import static android.R.attr.value;
+import static edu.nd.raisethebar.R.string.pref;
 
 /**
  * Created by jack1 on 10/18/2016.
@@ -46,6 +50,8 @@ public class GymSelectorActivity extends AppCompatActivity {
             HTTP.AsyncCall ac = new HTTP.AsyncCall(HTTP.Method.GET,new URI("http://whaleoftime.com/gyms.php").toURL(),  parameters, new HTTP.AsyncCall.StringRunnable(){
                 @Override
                 public void run(String s) {
+                    final Context ct = GymSelectorActivity.this;
+
                     String[] items = null;
                     JSONArray result = null;
                     try {
@@ -58,27 +64,49 @@ public class GymSelectorActivity extends AppCompatActivity {
                         Log.e(TAG,"JSON Error",e);
                     }
 
-                    ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(GymSelectorActivity.this, android.R.layout.simple_list_item_1, items);
+                    ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(ct, android.R.layout.simple_list_item_1, items);
                     //populate list with items from gyms.php - may need to use a more advanced array adaptor if simple text does not work
-                    ListView vid = (ListView) GymSelectorActivity.this.findViewById(R.id.gym_list);
+                    ListView vid = (ListView) findViewById(R.id.gym_list);
                     vid.setAdapter(itemsAdapter);
 
-                    //TODO previous gyms
-                    boolean prev = false;
-                    if(prev) {
+                    String last = getSharedPreferences(getString(pref),MODE_PRIVATE).getString("last-gym",null);//TODO get from API instead as JSONArray
+                    if(last!=null) {
+                        final String[] strings = {last};
+                        String[] names = new String[strings.length];
+                        try {
+                            for (int i =0; i<strings.length; i++)
+                                names[i] = new JSONObject(strings[i]).getString("name");
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Replace", e);
+                        }
+
                         LinearLayout l = (LinearLayout) findViewById(R.id.prev_gyms_layout);
                         l.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                         l.setVisibility(LinearLayout.VISIBLE);
+                        ListView prev = (ListView)findViewById(R.id.prev_gyms);
+                        prev.setAdapter(new ArrayAdapter<>(ct,android.R.layout.simple_list_item_1, names));
+                        prev.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent i = new Intent(ct, MachineSelectorActivity.class);
+                                try {
+                                    i.putExtra("JSON", strings[position]);
+                                    getSharedPreferences(getString(pref),MODE_PRIVATE).edit().putString("last-gym",strings[position]).apply();
+                                }catch (Exception e){
+                                    Log.e(TAG,"OnClickHandler",e);
+                                }
+                                startActivity(i);
+                            }
+                        });
                     }
 
                     //on item select, fire new activity
-                    final Context ct = GymSelectorActivity.this;
                     final JSONArray arr = result;
                     vid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Intent i = new Intent(ct, MachineSelectorActivity.class);
                             try {
                                 i.putExtra("JSON", arr.getJSONObject(position).toString());
+                                getSharedPreferences(getString(pref),MODE_PRIVATE).edit().putString("last-gym",arr.getJSONObject(position).toString()).apply();
                             }catch (Exception e){
                                 Log.e(TAG,"OnClickHandler",e);
                             }
