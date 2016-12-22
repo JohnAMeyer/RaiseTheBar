@@ -80,12 +80,7 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void startService() {
-        String mac = null;
-        try {
-            mac = new JSONObject(getIntent().getStringExtra("JSON")).getString("MAC");
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to get MAC from Intent", e);
-        }
+        String mac = getIntent().getStringExtra("MAC");
         bc = new BluetoothConnector();
         Intent i = new Intent(this, BluetoothBackground.class).putExtra("MAC", mac);
         bindService(i, bc, Context.BIND_AUTO_CREATE);

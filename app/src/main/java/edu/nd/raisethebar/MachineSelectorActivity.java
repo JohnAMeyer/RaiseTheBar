@@ -65,7 +65,7 @@ public class MachineSelectorActivity extends AppCompatActivity {
                                 Intent i = new Intent(ct, RecordActivity.class);
                                 try {
                                     MAC = arr.getJSONObject(position).getString("MAC");
-                                    i.putExtra("JSON", arr.getJSONObject(position).toString());
+                                    i.putExtra("MAC", MAC);
                                 } catch (Exception e) {
                                     Log.e(TAG, "OnClickHandler", e);
                                 }

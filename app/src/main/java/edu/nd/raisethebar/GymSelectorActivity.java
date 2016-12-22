@@ -93,7 +93,6 @@ public class GymSelectorActivity extends AppCompatActivity {
         }
     }
     public void home(View v){
-        Toast.makeText(this,"Show stuff for home user",Toast.LENGTH_LONG);
-        //TODO ad @home stuff
+        startActivity(new Intent(this, HomeActivity.class));
     }
 }
