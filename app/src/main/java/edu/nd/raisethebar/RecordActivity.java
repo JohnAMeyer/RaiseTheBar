@@ -15,17 +15,18 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
 
 import java.util.ArrayList;
-
-import static android.R.attr.data;
+import java.util.Arrays;
 
 public class RecordActivity extends AppCompatActivity {
+    public static final double STDDEV = .5;
     private static final String TAG = "RTB-Record";
     private final static int REQUEST_ENABLE_BT = 1;
-    public static final double STDDEV = .5;
     BluetoothBackground bb;
     BluetoothConnector bc;
     private boolean isRecording = false;
@@ -111,6 +112,29 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void process(ArrayList<Tuple>[] data, Intent i) {
+        try {
+            ArrayList<Tuple> acc = data[0];
+            double[][] dbs = new double[acc.size()][3];
+            for (int j = 0; j < acc.size(); j++) {
+                dbs[j] = acc.get(j).data;
+            }
+            RealMatrix rm = new Array2DRowRealMatrix(dbs);
+            RealMatrix covar = DataAnalysis.covarianceMatrix(rm);
+            Log.d(TAG,"Covariance matrix: " + covar.toString());
+            double[] eigVals = DataAnalysis.eigenvalues(covar);
+            RealVector eigVector = DataAnalysis.eigenvectorFromValue(covar, (eigVals[0] > eigVals[1]) ? ((eigVals[0] > eigVals[2]) ? 0 : 2) : ((eigVals[1] > eigVals[2]) ? 1 : 2));
+            Log.d(TAG,"Axis: " + eigVector.toString());
+            double[] components = DataAnalysis.components(rm, eigVector);
+            Log.d(TAG, Arrays.toString(components));
+            int count = DataAnalysis.counter(components);
+            Log.d(TAG, "Count is: " + count);
+            //Stability
+            Vector2D[] planar = DataAnalysis.planarize(rm,eigVector);
+            double var = DataAnalysis.rVariance(planar);
+            Log.d(TAG,"Var: " + var);//.01 seems like a decent cutoff
+        } catch (Exception e) {
+            Log.e(TAG, "General Processing Error: ", e);
+        }
         /*ArrayList<Tuple> acc = data[0];
         final int accsize = acc.size();
         double[] magnitude = new double[accsize], x = new double[accsize], y = new double[accsize], z = new double[accsize];
