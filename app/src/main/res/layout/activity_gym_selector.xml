@@ -40,7 +40,9 @@
         <ListView
             android:id="@+id/prev_gyms"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24sp"
+            android:layout_marginRight="24sp" />
 
         <TextView
             android:text="@string/gym_near"
@@ -53,6 +55,8 @@
     <ListView
         android:id="@+id/gym_list"
         android:layout_width="match_parent"
-        android:layout_height="332dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24sp"
+        android:layout_marginRight="24sp" />
 
 </LinearLayout>

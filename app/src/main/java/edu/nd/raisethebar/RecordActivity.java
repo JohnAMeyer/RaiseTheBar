@@ -120,7 +120,6 @@ public class RecordActivity extends AppCompatActivity {
             }
             RealMatrix rm = new Array2DRowRealMatrix(dbs);
             RealMatrix covar = DataAnalysis.covarianceMatrix(rm);
-            Log.d(TAG,"Covariance matrix: " + covar.toString());
             double[] eigVals = DataAnalysis.eigenvalues(covar);
             RealVector eigVector = DataAnalysis.eigenvectorFromValue(covar, (eigVals[0] > eigVals[1]) ? ((eigVals[0] > eigVals[2]) ? 0 : 2) : ((eigVals[1] > eigVals[2]) ? 1 : 2));
             Log.d(TAG,"Axis: " + eigVector.toString());
@@ -128,60 +127,15 @@ public class RecordActivity extends AppCompatActivity {
             Log.d(TAG, Arrays.toString(components));
             int count = DataAnalysis.counter(components);
             Log.d(TAG, "Count is: " + count);
+            i.putExtra("reps",count);
             //Stability
             Vector2D[] planar = DataAnalysis.planarize(rm,eigVector);
             double var = DataAnalysis.rVariance(planar);
             Log.d(TAG,"Var: " + var);//.01 seems like a decent cutoff
+            i.putExtra("form",var>.01D);
         } catch (Exception e) {
             Log.e(TAG, "General Processing Error: ", e);
         }
-        /*ArrayList<Tuple> acc = data[0];
-        final int accsize = acc.size();
-        double[] magnitude = new double[accsize], x = new double[accsize], y = new double[accsize], z = new double[accsize];
-        double[] avg = new double[3];
-        for (int j = 0; j < accsize; j++) {
-            Tuple t = acc.get(j);
-            double x1 = t.data[0];
-            double y1 = t.data[1];
-            double z1 = t.data[2];
-            x[j] = x1;
-            y[j] = y1;
-            z[j] = z1;
-            avg[0] += x1;
-            avg[1] += y1;
-            avg[2] += z1;
-        }
-        avg[0]/=accsize;
-        avg[1]/=accsize;
-        avg[2]/=accsize;
-
-        for (int j = 0; j < accsize; j++) {
-            x[j]-=avg[0];
-            y[j]-=avg[1];
-            z[j]-=avg[2];
-            magnitude[j] = Math.hypot(x[j], Math.hypot(y[j], z[j]));
-            Log.d(TAG,magnitude[j]+ "~,,, " + x[j] + "~,, " + y[j] + "~, " + z[j]);
-        }
-
-        double mean = 0.0;
-        double std = 0.0;
-        for (int j = 0; j < accsize; j++) {
-            //calculate std
-            double h = magnitude[j];
-            double delta = h - mean;
-            mean += delta / accsize;
-            std += delta * (h - mean);
-        }
-        std /= (accsize - 1);
-        int prev = 0;
-        int reps = 0;
-        for (int j = 0; j < accsize; j++) {
-            double zscore = (magnitude[j] - mean)/std;
-            int val = (int) Math.round(zscore/ STDDEV);
-            //Log.d(TAG,""+magnitude[j]);// + ", " + val);
-        }
-        reps/=2;
-        ArrayList<Tuple> mag = data[2];*/
     }
 
     //trigger display mode and push data to cloud
