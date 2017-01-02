@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
@@ -20,8 +21,12 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class RecordActivity extends AppCompatActivity {
     public static final double STDDEV = .5;
@@ -102,12 +107,27 @@ public class RecordActivity extends AppCompatActivity {
             isRecording = false;
             Intent i = new Intent(this, SessionDisplayActivity.class);
             process(data, i);//TODO add other parameters here
+            sendData(i);
             startActivity(i);
             finish();
         } else {
             bb.startRecording();
             ((Button) v).setText("Stop Recording");
             isRecording = true;
+        }
+    }
+
+    private void sendData(Intent i) {
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("goodform", i.getBooleanExtra("form", true) ? "0" : "1");
+        parameters.put("reps", "" + i.getIntExtra("reps", -1));
+        parameters.put("machine", "" + getIntent().getIntExtra("machine", -1));
+        parameters.put("user", "1");
+        parameters.put("weight",((TextView)findViewById(R.id.editWeight)).getText().toString());
+        try {
+            new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/update.php").toURL(), parameters, HTTP.AsyncCall.NO_CALLBACK).execute();
+        } catch (MalformedURLException | URISyntaxException e) {
+            Log.e(TAG, "HTTP Error", e);
         }
     }
 
@@ -122,17 +142,17 @@ public class RecordActivity extends AppCompatActivity {
             RealMatrix covar = DataAnalysis.covarianceMatrix(rm);
             double[] eigVals = DataAnalysis.eigenvalues(covar);
             RealVector eigVector = DataAnalysis.eigenvectorFromValue(covar, (eigVals[0] > eigVals[1]) ? ((eigVals[0] > eigVals[2]) ? 0 : 2) : ((eigVals[1] > eigVals[2]) ? 1 : 2));
-            Log.d(TAG,"Axis: " + eigVector.toString());
+            Log.d(TAG, "Axis: " + eigVector.toString());
             double[] components = DataAnalysis.components(rm, eigVector);
             Log.d(TAG, Arrays.toString(components));
             int count = DataAnalysis.counter(components);
             Log.d(TAG, "Count is: " + count);
-            i.putExtra("reps",count);
+            i.putExtra("reps", count);
             //Stability
-            Vector2D[] planar = DataAnalysis.planarize(rm,eigVector);
+            Vector2D[] planar = DataAnalysis.planarize(rm, eigVector);
             double var = DataAnalysis.rVariance(planar);
-            Log.d(TAG,"Var: " + var);//.01 seems like a decent cutoff
-            i.putExtra("form",var>.01D);
+            Log.d(TAG, "Var: " + var);//.01 seems like a decent cutoff
+            i.putExtra("form", var > .01D);
         } catch (Exception e) {
             Log.e(TAG, "General Processing Error: ", e);
         }

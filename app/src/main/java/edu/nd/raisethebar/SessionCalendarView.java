@@ -1,16 +1,10 @@
 package edu.nd.raisethebar;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * Borrowing from a tutorial found at: https://www.toptal.com/android/android-customization-how-to-build-a-ui-component-that-does-what-you-want
@@ -61,11 +54,11 @@ public class SessionCalendarView extends LinearLayout {
     }
 
     /**
-     * Load control xml layout
+     * Load control xml item_session
      */
     private void initControl(Context context, AttributeSet attrs){
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.calendar_view, this);
+        inflater.inflate(R.layout.view_calendar, this);
 
         assignUiElements();
         assignClickHandlers();
@@ -73,7 +66,7 @@ public class SessionCalendarView extends LinearLayout {
         updateCalendar();
     }
     private void assignUiElements(){
-        // layout is inflated, assign local variables to components
+        // item_session is inflated, assign local variables to components
         header = (LinearLayout)findViewById(R.id.calendar_header);
         btnPrev = (ImageView)findViewById(R.id.calendar_prev_button);
         btnNext = (ImageView)findViewById(R.id.calendar_next_button);

@@ -61,11 +61,10 @@ public class MachineSelectorActivity extends AppCompatActivity {
                         final JSONArray arr = result;
                         vid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                String MAC = null;
                                 Intent i = new Intent(ct, RecordActivity.class);
                                 try {
-                                    MAC = arr.getJSONObject(position).getString("MAC");
-                                    i.putExtra("MAC", MAC);
+                                    i.putExtra("MAC", arr.getJSONObject(position).getString("MAC"));
+                                    i.putExtra("machine",arr.getJSONObject(position).getInt("id"));
                                 } catch (Exception e) {
                                     Log.e(TAG, "OnClickHandler", e);
                                 }

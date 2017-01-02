@@ -84,11 +84,7 @@ public class GymSelectorActivity extends AppCompatActivity {
                     ArrayAdapter<Gym> itemsAdapter = new ArrayAdapter<Gym>(ct, android.R.layout.simple_list_item_1, items) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
-                            Gym g = getItem(position);
-                            if (convertView == null) {
-                                convertView = new GymView(getContext(), g);
-                            }
-                            return convertView;
+                            return convertView == null?new GymView(getContext(), getItem(position)):convertView;
                         }
                     };
                     //populate list with items from gyms.php - may need to use a more advanced array adaptor if simple text does not work
@@ -101,7 +97,7 @@ public class GymSelectorActivity extends AppCompatActivity {
                         Gym[] gyms = new Gym[strings.length];
                         try {
                             for (int i = 0; i < strings.length; i++)
-                                gyms[i] = Gym.fromJSON(new JSONObject(strings[i]));
+                                gyms[i] = new Gym(new JSONObject(strings[i]));
                         } catch (JSONException e) {
                             Log.e(TAG, "Replace", e);
                         }
@@ -185,15 +181,13 @@ class Gym {
 
     static Gym[] fromJSONArr(JSONArray ja) throws JSONException {
         Gym[] items = new Gym[ja.length()];
-        for (int i = 0; i < ja.length(); i++) {
-            final JSONObject jo = ja.getJSONObject(i);
-            items[i] = new Gym(jo.get("name").toString(), jo.getString("distance"));
-        }
+        for (int i = 0; i < ja.length(); i++)
+            items[i] = new Gym(ja.getJSONObject(i));
         return items;
     }
 
-    static Gym fromJSON(JSONObject jo) throws JSONException {
-        return new Gym(jo.get("name").toString(), jo.getString("distance"));
+    Gym(JSONObject jo) throws JSONException {
+        this(jo.get("name").toString(), jo.getString("distance"));
     }
 
     public String getDist() {
@@ -208,7 +202,7 @@ class Gym {
 class GymView extends RelativeLayout {
     public GymView(Context context, Gym g) {
         super(context);
-        inflate(context, R.layout.gym_item, this);
+        inflate(context, R.layout.item_gym, this);
         ((TextView) findViewById(R.id.gym_name)).setText(g.getName());
         ((TextView) findViewById(R.id.distance)).setText(g.getDist());
     }

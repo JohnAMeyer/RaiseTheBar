@@ -164,7 +164,7 @@ public class BluetoothBackground extends Service {
                 acc.add(new Tuple(new float[]{accX, accY, accZ}, time));
                 gyr.add(new Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
                 mag.add(new Tuple(new float[]{magX, magY, magZ}, time));
-                Log.d(TAG,time+";"+accX+";"+accY+";"+accZ+";"+gyrX+";"+gyrY+";"+gyrZ+";"+magX+";"+magY+";"+magZ);
+                Log.v(TAG,time+";"+accX+";"+accY+";"+accZ+";"+gyrX+";"+gyrY+";"+gyrZ+";"+magX+";"+magY+";"+magZ);
             }
         }
 

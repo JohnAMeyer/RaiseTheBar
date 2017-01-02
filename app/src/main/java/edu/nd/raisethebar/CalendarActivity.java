@@ -34,6 +34,7 @@ public class CalendarActivity extends AppCompatActivity {
     private static final String TAG = "RTB-Calendar";
     SessionCalendarView calendar;
     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
+    SimpleDateFormat api = new SimpleDateFormat("yyyy-MM-dd");
     private static final String MANY = "#66ff66";
     private static final String FEW = "#ffff99";
     HashSet<String> set = new HashSet<>();
@@ -44,10 +45,10 @@ public class CalendarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_select);
         HashMap<String,String> parameters = new HashMap<>();
-        int id = getSharedPreferences(getString(pref), Context.MODE_PRIVATE).getInt("id", -1);//TODO define somewhere
+        int id = getSharedPreferences(getString(pref), Context.MODE_PRIVATE).getInt("id", 1);//TODO define somewhere
         parameters.put("user",""+id);
         try {
-            HTTP.AsyncCall ac = new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/sessions.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
+            new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/sessions.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
                 @Override
                 public void run(String s) {
                     HashMap<Date, Integer> events = new HashMap<>();//Integer is the color
@@ -55,7 +56,8 @@ public class CalendarActivity extends AppCompatActivity {
                     try {
                         result = new JSONObject(s).getJSONArray("days");
                         for (int i = 0; i < result.length(); i++) {
-                            Date date = format.parse(result.getJSONObject(i).getString("date"));
+                            Date date = api.parse(result.getJSONObject(i).getString("date"));
+                            Log.d(TAG,api.format(date));
                             Integer color = result.getJSONObject(i).getInt("sessions") > 4 ? Color.parseColor(MANY) : Color.parseColor(FEW);
                             events.put(date, color);
                             set.add(df.format(date));
@@ -80,12 +82,12 @@ public class CalendarActivity extends AppCompatActivity {
                         public void onDayClick(Date date) {
                             if (!set.contains(df.format(date)))
                                 return;
-                            Intent i = new Intent(CalendarActivity.this, SessionActivity.class).putExtra("date", df.format(date));
+                            Intent i = new Intent(CalendarActivity.this, SessionActivity.class).putExtra("date", api.format(date));
                             startActivity(i);
                         }
                     });
                 }
-            });
+            }).execute();
         } catch (URISyntaxException | MalformedURLException e) {
             Log.e(TAG, "URI Error", e);
         }

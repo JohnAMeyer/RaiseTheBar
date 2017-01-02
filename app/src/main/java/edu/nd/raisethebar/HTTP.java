@@ -37,6 +37,12 @@ public class HTTP {
     }
 
     public static class AsyncCall extends AsyncTask<Void, Void, String> {
+        public static final StringRunnable NO_CALLBACK = new StringRunnable() {
+            @Override
+            public void run(String s) {
+            }
+        };
+
         interface StringRunnable{
             void run(String s);
         }

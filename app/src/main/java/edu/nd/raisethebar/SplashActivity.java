@@ -23,7 +23,7 @@ public class SplashActivity extends AppCompatActivity {
             String pass = sharedPref.getString("pass",null);
             //hash weirdness acc. to http://www.codeproject.com/Articles/704865/Salted-Password-Hashing-Doing-it-Right
             //TODO server call
-            boolean valid = false;
+            boolean valid = android.util.Patterns.EMAIL_ADDRESS.matcher(user).matches();
             Toast.makeText(this, getString(valid?R.string.login_prev_ok:R.string.login_prev_fail), Toast.LENGTH_SHORT).show();
             if(valid)
                 intent = new Intent(this, SelectorActivity.class);

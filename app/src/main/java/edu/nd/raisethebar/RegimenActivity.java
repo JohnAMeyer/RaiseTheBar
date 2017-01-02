@@ -1,7 +1,6 @@
 package edu.nd.raisethebar;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,10 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-
-import static java.security.AccessController.getContext;
 
 public class RegimenActivity extends AppCompatActivity {
     private static final String TAG = "RTB-Regimen";
@@ -40,7 +34,7 @@ public class RegimenActivity extends AppCompatActivity {
                     View v = convertView;
                     if (v == null) {
                         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        v = inflater.inflate(R.layout.regimen_item, null);
+                        v = inflater.inflate(R.layout.item_regimen, null);
                     }
 
                     try {
