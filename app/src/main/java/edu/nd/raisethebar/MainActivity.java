@@ -24,8 +24,6 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
-
 /**
  * This class combines both functionalities
  * @deprecated
@@ -37,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mAccelerometer;
     private Sensor mOrientation;
     //private FileWriter writer;
-    private ArrayList<Tuple> accelerometer_event;
-    private ArrayList<Tuple> tilt_event;
+    private ArrayList<RecordActivity.Tuple> accelerometer_event;
+    private ArrayList<RecordActivity.Tuple> tilt_event;
     private boolean toggle = false;
     EditText weightEdit;
     private int weight=0;
@@ -113,21 +111,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     protected void process(){
         long time_0 = accelerometer_event.get(0).time;
-        for (Tuple tu : accelerometer_event){
+        for (RecordActivity.Tuple tu : accelerometer_event){
             tu.time-= time_0;
             //tu.time /= 1000000000;
         }
-        LinkedList<Tuple> reimannVel = new LinkedList<>();
+        LinkedList<RecordActivity.Tuple> reimannVel = new LinkedList<>();
         velo = new double[accelerometer_event.size()];
         times = new double[accelerometer_event.size()];
-        reimannVel.add(new Tuple(ZERO,0));
+        reimannVel.add(new RecordActivity.Tuple(ZERO,0));
         for (int i = 1; i < accelerometer_event.size();i++){
             double[] vel = new double[3];
             long time = (accelerometer_event.get(i).time-accelerometer_event.get(i-1).time);
             vel[0] = (accelerometer_event.get(i).data[0]*time + reimannVel.peekLast().data[0])/1000000000D;
             vel[1] = (accelerometer_event.get(i).data[1]*time + reimannVel.peekLast().data[1])/1000000000D;
             vel[2] = (accelerometer_event.get(i).data[2]*time + reimannVel.peekLast().data[2])/1000000000D;
-            reimannVel.add(new Tuple(vel,accelerometer_event.get(i).time));
+            reimannVel.add(new RecordActivity.Tuple(vel,accelerometer_event.get(i).time));
             Log.d("VEL",reimannVel.peekLast().toString());
             velo[i] = Math.hypot(Math.hypot(vel[0],vel[1]),vel[2]);
             times[i] = accelerometer_event.get(i).time/1000000000D;
@@ -184,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
             mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_UI);
             toggle = true;
-            accelerometer_event=new ArrayList<Tuple>();
-            tilt_event=new ArrayList<Tuple>();
+            accelerometer_event=new ArrayList<RecordActivity.Tuple>();
+            tilt_event=new ArrayList<RecordActivity.Tuple>();
             try{
                 weight = Integer.parseInt(weightEdit.getText().toString());
             }catch(Exception e){
@@ -201,9 +199,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // find if the event is a acceleration or gyro
         if (event.sensor == mAccelerometer) {
             //write to accelerometer tuple arraylist
-            accelerometer_event.add(new Tuple(event.values, event.timestamp));
+            accelerometer_event.add(new RecordActivity.Tuple(event.values, event.timestamp));
         } else {
-            tilt_event.add(new Tuple(event.values, event.timestamp));
+            tilt_event.add(new RecordActivity.Tuple(event.values, event.timestamp));
 
             //gyroscope_event.add
             // write to array list

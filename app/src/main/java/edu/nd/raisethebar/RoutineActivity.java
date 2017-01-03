@@ -17,30 +17,34 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RegimenActivity extends AppCompatActivity {
-    private static final String TAG = "RTB-Regimen";
+/**
+ * Handles routine management and viewing - work in progress.
+ * @author JohnAMeyer
+ */
+public class RoutineActivity extends AppCompatActivity {
+    private static final String TAG = "RTB-Routine";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_regimen);
-        ((TextView)findViewById(R.id.regimen_title)).setText(SimpleDateFormat.getDateInstance().format(new Date()) + " Regimen");
+        setContentView(R.layout.activity_routine);
+        ((TextView)findViewById(R.id.routine_title)).setText(SimpleDateFormat.getDateInstance().format(new Date()) + " Routine");
         //TODO get list of exercises for the day
         JSONObject[] items = new JSONObject[0];
 
-            ((ListView) findViewById(R.id.regimen_todo)).setAdapter(new ArrayAdapter<JSONObject>(this,-1,items) {
+            ((ListView) findViewById(R.id.routine_todo)).setAdapter(new ArrayAdapter<JSONObject>(this,-1,items) {
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     View v = convertView;
                     if (v == null) {
                         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                        v = inflater.inflate(R.layout.item_regimen, null);
+                        v = inflater.inflate(R.layout.item_routine, null);
                     }
 
                     try {
                         JSONObject jo = getItem(position);
-                        ((TextView) v.findViewById(R.id.regimen_item_name)).setText(jo.getString("name"));
-                        //TODO((TextView) v.findViewById(R.id.regimen_item_progress));
+                        ((TextView) v.findViewById(R.id.routine_item_name)).setText(jo.getString("name"));
+                        //TODO((TextView) v.findViewById(R.id.routine_item_progress));
                     } catch (JSONException je) {
                         Log.e(TAG, "JSON Parse Exception", je);
                     }

@@ -65,7 +65,7 @@ public class MasterActivity extends AppCompatActivity {
         }
     }
 
-    public void dataReady(ArrayList<Tuple> accEvents, ArrayList<Tuple> tiltEvents) {
+    public void dataReady(ArrayList<RecordActivity.Tuple> accEvents, ArrayList<RecordActivity.Tuple> tiltEvents) {
         process(accEvents, tiltEvents);
         int lengthAccelerometer = accEvents.size();
         final LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
@@ -109,23 +109,23 @@ public class MasterActivity extends AppCompatActivity {
         sendData();
     }
 
-    protected void process(ArrayList<Tuple> accEvents, ArrayList<Tuple> tiltEvents) {
+    protected void process(ArrayList<RecordActivity.Tuple> accEvents, ArrayList<RecordActivity.Tuple> tiltEvents) {
         long time_0 = accEvents.get(0).time;
-        for (Tuple tu : accEvents) {
+        for (RecordActivity.Tuple tu : accEvents) {
             tu.time -= time_0;
             //tu.time /= 1000000000;
         }
-        LinkedList<Tuple> reimannVel = new LinkedList<>();
+        LinkedList<RecordActivity.Tuple> reimannVel = new LinkedList<>();
         velo = new double[accEvents.size()];
         times = new double[accEvents.size()];
-        reimannVel.add(new Tuple(ZERO, 0));
+        reimannVel.add(new RecordActivity.Tuple(ZERO, 0));
         for (int i = 1; i < accEvents.size(); i++) {
             double[] vel = new double[3];
             long time = (accEvents.get(i).time - accEvents.get(i - 1).time);
             vel[0] = (accEvents.get(i).data[0] * time + reimannVel.peekLast().data[0]) / 1000000000D;
             vel[1] = (accEvents.get(i).data[1] * time + reimannVel.peekLast().data[1]) / 1000000000D;
             vel[2] = (accEvents.get(i).data[2] * time + reimannVel.peekLast().data[2]) / 1000000000D;
-            reimannVel.add(new Tuple(vel, accEvents.get(i).time));
+            reimannVel.add(new RecordActivity.Tuple(vel, accEvents.get(i).time));
             Log.d("VEL", reimannVel.peekLast().toString());
             velo[i] = Math.hypot(Math.hypot(vel[0], vel[1]), vel[2]);
             times[i] = accEvents.get(i).time / 1000000000D;
@@ -200,7 +200,7 @@ public class MasterActivity extends AppCompatActivity {
                 Log.d(TAG, "Connected");
                 DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                 int numnum = dis.readByte();
-                ArrayList<Tuple>[] arrs = new ArrayList[numnum];
+                ArrayList<RecordActivity.Tuple>[] arrs = new ArrayList[numnum];
                 for (int q = 0; q < numnum; q++) {
                     int num = dis.readInt();
                     Log.d(TAG, "Reading all " + num + "events in " + q + "th set");
@@ -210,7 +210,7 @@ public class MasterActivity extends AppCompatActivity {
                         long time = dis.readLong();
                         for (int j = 0; j < 3; j++)
                             coord[j] = dis.readDouble();
-                        arrs[q].add(new Tuple(coord, time));
+                        arrs[q].add(new RecordActivity.Tuple(coord, time));
                         Log.d(TAG, arrs[q].get(arrs[q].size() - 1).toString());
                     }
                 }

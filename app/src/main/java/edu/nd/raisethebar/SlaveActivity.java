@@ -13,19 +13,11 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
-import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
-
-import static android.R.attr.data;
-import static android.R.attr.x;
-import static android.R.attr.y;
-import static edu.nd.raisethebar.R.id.StartClick;
 
 /**
  * This class is for the device that is recording the data
@@ -40,8 +32,8 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
     private Sensor mAccelerometer;
     private Sensor mOrientation;
     //private FileWriter writer;
-    private ArrayList<Tuple> accelerometer_event;
-    private ArrayList<Tuple> tilt_event;
+    private ArrayList<RecordActivity.Tuple> accelerometer_event;
+    private ArrayList<RecordActivity.Tuple> tilt_event;
     private boolean toggle = false;
     Button startClick;
     ConnectionThread ct;
@@ -82,8 +74,8 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
             toggle = true;
-            accelerometer_event=new ArrayList<Tuple>();
-            tilt_event=new ArrayList<Tuple>();
+            accelerometer_event=new ArrayList<RecordActivity.Tuple>();
+            tilt_event=new ArrayList<RecordActivity.Tuple>();
             startClick.setText("END RECORDING");
         }
     }
@@ -93,9 +85,9 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
         // find if the event is a acceleration or gyro
         if (event.sensor == mAccelerometer) {
             //write to accelerometer tuple arraylist
-            accelerometer_event.add(new Tuple(event.values, event.timestamp));
+            accelerometer_event.add(new RecordActivity.Tuple(event.values, event.timestamp));
         } else {
-            tilt_event.add(new Tuple(event.values, event.timestamp));
+            tilt_event.add(new RecordActivity.Tuple(event.values, event.timestamp));
             //gyroscope_event.add
             // write to array list
         }
@@ -107,16 +99,16 @@ public class SlaveActivity extends AppCompatActivity implements SensorEventListe
     }
     protected class ConnectionThread extends Thread {
         BluetoothSocket bs;
-        public ConnectionThread send(ArrayList<Tuple>... events){
+        public ConnectionThread send(ArrayList<RecordActivity.Tuple>... events){
             try {
                 DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(bs.getOutputStream()));
                 dos.writeByte(events.length);
                 int z = -1;
-                for(ArrayList<Tuple> data : events) {
+                for(ArrayList<RecordActivity.Tuple> data : events) {
                     dos.writeInt(data.size());
                     Log.d(TAG,"Reading all " + data.size() + "events in " + z++ + "th set");
                     for (int i = 0; i < data.size(); i++) {
-                        Tuple t = data.get(i);
+                        RecordActivity.Tuple t = data.get(i);
                         dos.writeLong(t.time);
                         dos.writeDouble(t.data[0]);
                         dos.writeDouble(t.data[1]);

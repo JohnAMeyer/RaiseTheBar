@@ -39,7 +39,7 @@ public class SessionCalendarView extends LinearLayout {
     private GridView grid;
     private HashMap<Date, Integer> events;
 
-    public SessionCalendarView(Context context){
+    public SessionCalendarView(Context context) {
         super(context);
     }
 
@@ -48,7 +48,7 @@ public class SessionCalendarView extends LinearLayout {
         initControl(context, attrs);
     }
 
-    public SessionCalendarView(Context context, AttributeSet attrs, int defStyleAttr){
+    public SessionCalendarView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initControl(context, attrs);
     }
@@ -56,7 +56,7 @@ public class SessionCalendarView extends LinearLayout {
     /**
      * Load control xml item_session
      */
-    private void initControl(Context context, AttributeSet attrs){
+    private void initControl(Context context, AttributeSet attrs) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_calendar, this);
 
@@ -65,59 +65,61 @@ public class SessionCalendarView extends LinearLayout {
 
         updateCalendar();
     }
-    private void assignUiElements(){
+
+    private void assignUiElements() {
         // item_session is inflated, assign local variables to components
-        header = (LinearLayout)findViewById(R.id.calendar_header);
-        btnPrev = (ImageView)findViewById(R.id.calendar_prev_button);
-        btnNext = (ImageView)findViewById(R.id.calendar_next_button);
-        txtDate = (TextView)findViewById(R.id.calendar_date_display);
-        grid = (GridView)findViewById(R.id.calendar_grid);
+        header = (LinearLayout) findViewById(R.id.calendar_header);
+        btnPrev = (ImageView) findViewById(R.id.calendar_prev_button);
+        btnNext = (ImageView) findViewById(R.id.calendar_next_button);
+        txtDate = (TextView) findViewById(R.id.calendar_date_display);
+        grid = (GridView) findViewById(R.id.calendar_grid);
     }
 
-    private void assignClickHandlers(){
+    private void assignClickHandlers() {
         // add one month and refresh UI
-        btnNext.setOnClickListener(new OnClickListener(){
+        btnNext.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 currentDate.add(Calendar.MONTH, 1);
                 updateCalendar();
             }
         });
 
         // subtract one month and refresh UI
-        btnPrev.setOnClickListener(new OnClickListener(){
+        btnPrev.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 currentDate.add(Calendar.MONTH, -1);
                 updateCalendar();
 
             }
         });
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> view, View cell, int position, long id){
+            public void onItemClick(AdapterView<?> view, View cell, int position, long id) {
                 if (eventHandler == null)
                     return;
 
-                eventHandler.onDayClick((Date)view.getItemAtPosition(position));
+                eventHandler.onDayClick((Date) view.getItemAtPosition(position));
                 return;
             }
         });
         // long-pressing a day
-        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+        grid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 
             @Override
-            public boolean onItemLongClick(AdapterView<?> view, View cell, int position, long id){
+            public boolean onItemLongClick(AdapterView<?> view, View cell, int position, long id) {
                 if (eventHandler == null)
                     return false;
 
-                eventHandler.onDayLongPress((Date)view.getItemAtPosition(position));
+                eventHandler.onDayLongPress((Date) view.getItemAtPosition(position));
                 return true;
             }
         });
     }
-    public void setEvents(@Nullable HashMap<Date,Integer> events){
+
+    public void setEvents(@Nullable HashMap<Date, Integer> events) {
         this.events = events;
         updateCalendar();
     }
@@ -125,9 +127,9 @@ public class SessionCalendarView extends LinearLayout {
     /**
      * Display dates correctly in grid
      */
-    private void updateCalendar(){
+    private void updateCalendar() {
         ArrayList<Date> cells = new ArrayList<>();
-        Calendar calendar = (Calendar)currentDate.clone();
+        Calendar calendar = (Calendar) currentDate.clone();
 
         // determine the cell for current month's beginning
         calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -137,7 +139,7 @@ public class SessionCalendarView extends LinearLayout {
         calendar.add(Calendar.DAY_OF_MONTH, -monthBeginningCell);
 
         // fill cells
-        while (cells.size() < DAYS_COUNT){
+        while (cells.size() < DAYS_COUNT) {
             cells.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
@@ -152,22 +154,38 @@ public class SessionCalendarView extends LinearLayout {
         //header.setBackgroundColor(getResources().getColor(color)); TODO add colors
     }
 
+    /**
+     * Assign event handler to be passed needed events
+     */
+    public void setEventHandler(EventHandler eventHandler) {
+        this.eventHandler = eventHandler;
+    }
 
-    private class CalendarAdapter extends ArrayAdapter<Date>{
+    /**
+     * This interface defines what events to be reported to
+     * the outside world
+     */
+    public interface EventHandler {
+        void onDayLongPress(Date date);
+
+        void onDayClick(Date date);
+    }
+
+    private class CalendarAdapter extends ArrayAdapter<Date> {
         // days with sessions
-        private HashMap<Date,Integer> eventDays;
+        private HashMap<Date, Integer> eventDays;
 
         // for view inflation
         private LayoutInflater inflater;
 
-        public CalendarAdapter(Context context, ArrayList<Date> days, HashMap<Date,Integer> eventDays){
+        public CalendarAdapter(Context context, ArrayList<Date> days, HashMap<Date, Integer> eventDays) {
             super(context, R.layout.calendar_day, days);
             this.eventDays = eventDays;
             inflater = LayoutInflater.from(context);
         }
 
         @Override
-        public View getView(int position, View view, ViewGroup parent){
+        public View getView(int position, View view, ViewGroup parent) {
             // day in question
             Date date = getItem(position);
             int day = date.getDate();
@@ -182,12 +200,12 @@ public class SessionCalendarView extends LinearLayout {
                 view = inflater.inflate(R.layout.calendar_day, parent, false);
 
             // clear styling
-            ((TextView)view).setTypeface(null, Typeface.NORMAL);
-            ((TextView)view).setTextColor(Color.BLACK);
+            ((TextView) view).setTypeface(null, Typeface.NORMAL);
+            ((TextView) view).setTextColor(Color.BLACK);
 
             //TODO change to background highlighting code
-            if (eventDays != null){
-                for (Date eventDate : eventDays.keySet()){
+            if (eventDays != null) {
+                for (Date eventDate : eventDays.keySet()) {
                     if (eventDate.getDate() == day && eventDate.getMonth() == month && eventDate.getYear() == year) {
                         // mark this day for event
                         view.setBackgroundColor(eventDays.get(eventDate));
@@ -196,36 +214,19 @@ public class SessionCalendarView extends LinearLayout {
                 }
             }
 
-            if (month != today.getMonth() || year != today.getYear()){
+            if (month != today.getMonth() || year != today.getYear()) {
                 // if this day is outside current month, grey it out
-                ((TextView)view).setTextColor(getResources().getColor(R.color.greyed_out));
-            }
-            else if (day == today.getDate()){
+                ((TextView) view).setTextColor(getResources().getColor(R.color.greyed_out));
+            } else if (day == today.getDate()) {
                 // if it is today, set it to blue/bold
-                ((TextView)view).setTypeface(null, Typeface.BOLD);
-                ((TextView)view).setTextColor(getResources().getColor(R.color.today));
+                ((TextView) view).setTypeface(null, Typeface.BOLD);
+                ((TextView) view).setTextColor(getResources().getColor(R.color.today));
             }
 
             // set text
-            ((TextView)view).setText(String.valueOf(date.getDate()));
+            ((TextView) view).setText(String.valueOf(date.getDate()));
 
             return view;
         }
-    }
-
-    /**
-     * Assign event handler to be passed needed events
-     */
-    public void setEventHandler(EventHandler eventHandler){
-        this.eventHandler = eventHandler;
-    }
-
-    /**
-     * This interface defines what events to be reported to
-     * the outside world
-     */
-    public interface EventHandler{
-        void onDayLongPress(Date date);
-        void onDayClick(Date date);
     }
 }

@@ -28,6 +28,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * A class that handles the GUI side of connecting to the device and recording the data.
+ *
+ * @author JohnAMeyer
+ */
 public class RecordActivity extends AppCompatActivity {
     public static final double STDDEV = .5;
     private static final String TAG = "RTB-Record";
@@ -38,6 +43,9 @@ public class RecordActivity extends AppCompatActivity {
     private BluetoothAdapter ba;
 
     @Override
+    /**
+     * Sets up the GUI and prepares for connecting to the device.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connecting);
@@ -48,6 +56,9 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the request for turning Bluetooth on.
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT) {
@@ -61,7 +72,12 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
-    public void progress(final int i) {
+    /**
+     * Handles the background service's progress in connecting to the device.
+     *
+     * @param i the progress (out of 100)
+     */
+    void progress(final int i) {
         new Handler(getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -79,12 +95,18 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Calls for starting the Bluetooth service.
+     */
     protected void onStart() {
         super.onStart();
         if (ba != null && ba.isEnabled())
             startService();
     }
 
+    /**
+     * Starts the Bluetooth service with Intent-provided MAC.
+     */
     private void startService() {
         String mac = getIntent().getStringExtra("MAC");
         bc = new BluetoothConnector();
@@ -93,6 +115,9 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Stops the background Service.
+     */
     protected void onStop() {
         super.onStop();
         if (bc != null) {
@@ -101,6 +126,11 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the Start/Stop recording button.
+     *
+     * @param v the calling view - irrelevant
+     */
     public void toggle(View v) {
         if (isRecording) {
             ArrayList<Tuple>[] data = bb.stopRecording();
@@ -117,13 +147,18 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Submits the acquired data to the server.
+     *
+     * @param i the intent to package the data in.
+     */
     private void sendData(Intent i) {
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("goodform", i.getBooleanExtra("form", true) ? "0" : "1");
         parameters.put("reps", "" + i.getIntExtra("reps", -1));
         parameters.put("machine", "" + getIntent().getIntExtra("machine", -1));
         parameters.put("user", "1");
-        parameters.put("weight",((TextView)findViewById(R.id.editWeight)).getText().toString());
+        parameters.put("weight", ((TextView) findViewById(R.id.editWeight)).getText().toString());
         try {
             new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/update.php").toURL(), parameters, HTTP.AsyncCall.NO_CALLBACK).execute();
         } catch (MalformedURLException | URISyntaxException e) {
@@ -131,6 +166,12 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Processes the data using the DataAnalysis class once the data collection is complete.
+     *
+     * @param data the data collected
+     * @param i    the intent to package the data in.
+     */
     private void process(ArrayList<Tuple>[] data, Intent i) {
         try {
             ArrayList<Tuple> acc = data[0];
@@ -141,7 +182,7 @@ public class RecordActivity extends AppCompatActivity {
             RealMatrix rm = new Array2DRowRealMatrix(dbs);
             RealMatrix covar = DataAnalysis.covarianceMatrix(rm);
             double[] eigVals = DataAnalysis.eigenvalues(covar);
-            RealVector eigVector = DataAnalysis.eigenvectorFromValue(covar, (eigVals[0] > eigVals[1]) ? ((eigVals[0] > eigVals[2]) ? 0 : 2) : ((eigVals[1] > eigVals[2]) ? 1 : 2));
+            RealVector eigVector = DataAnalysis.eigenvectorFromValue((eigVals[0] > eigVals[1]) ? ((eigVals[0] > eigVals[2]) ? 0 : 2) : ((eigVals[1] > eigVals[2]) ? 1 : 2));
             Log.d(TAG, "Axis: " + eigVector.toString());
             double[] components = DataAnalysis.components(rm, eigVector);
             Log.d(TAG, Arrays.toString(components));
@@ -159,6 +200,38 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     //trigger display mode and push data to cloud
+
+    /**
+     * @author JohnAMeyer
+     * @since 10/2/2016
+     */
+
+    public static class Tuple {
+        long time;
+        double[] data;
+
+        public Tuple(double[] data, long time) {
+            this.data = data;
+            this.time = time;
+        }
+
+        public Tuple(float[] data, long time) {
+            this.data = new double[data.length];
+            for (int i = 0; i < data.length; i++) {
+                this.data[i] = data[i];
+            }
+            this.time = time;
+        }
+
+        @Override
+        public String toString() {
+            return "{" + time + ":" + Arrays.toString(data) + "}";
+        }
+    }
+
+    /**
+     * Handles Bluetooth connection.
+     */
     class BluetoothConnector implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {

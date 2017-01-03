@@ -41,9 +41,9 @@ public class BluetoothBackground extends Service {
     Binder b = new LocalBinder();
     private BLECallback bc;
     private Queue<Runnable> writes = new LinkedList<>();
-    private ArrayList<Tuple> acc = new ArrayList<>();
-    private ArrayList<Tuple> gyr = new ArrayList<>();
-    private ArrayList<Tuple> mag = new ArrayList<>();
+    private ArrayList<RecordActivity.Tuple> acc = new ArrayList<>();
+    private ArrayList<RecordActivity.Tuple> gyr = new ArrayList<>();
+    private ArrayList<RecordActivity.Tuple> mag = new ArrayList<>();
     private boolean isRecording = false;
     private RecordActivity a;
 
@@ -77,9 +77,9 @@ public class BluetoothBackground extends Service {
      *
      * @return the data collection
      */
-    public ArrayList<Tuple>[] stopRecording() {
+    public ArrayList<RecordActivity.Tuple>[] stopRecording() {
         isRecording = false;
-        ArrayList<Tuple>[] arr = new ArrayList[3];
+        ArrayList<RecordActivity.Tuple>[] arr = new ArrayList[3];
         arr[0] = acc;
         arr[1] = gyr;
         arr[2] = mag;
@@ -199,9 +199,9 @@ public class BluetoothBackground extends Service {
                 float magZ = magConvert((short) (((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
 
                 long time = System.currentTimeMillis();
-                acc.add(new Tuple(new float[]{accX, accY, accZ}, time));
-                gyr.add(new Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
-                mag.add(new Tuple(new float[]{magX, magY, magZ}, time));
+                acc.add(new RecordActivity.Tuple(new float[]{accX, accY, accZ}, time));
+                gyr.add(new RecordActivity.Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
+                mag.add(new RecordActivity.Tuple(new float[]{magX, magY, magZ}, time));
                 Log.v(TAG, time + ";" + accX + ";" + accY + ";" + accZ + ";" + gyrX + ";" + gyrY + ";" + gyrZ + ";" + magX + ";" + magY + ";" + magZ);
             }
         }
