@@ -29,8 +29,8 @@ import static edu.nd.raisethebar.R.id.StartClick;
 
 /**
  * This class is for the device that is recording the data
+ * @deprecated
  */
-
 
 public class SlaveActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
     public static final String TAG = "Slave Device";

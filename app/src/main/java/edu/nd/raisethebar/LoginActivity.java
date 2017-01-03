@@ -5,22 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-
-import static android.R.attr.value;
-
 /**
- * Created by jack1 on 10/24/2016.
+ * Handles the login process by automatically logging in the user or prompting them for credentials upon failure.
+ *
+ * @author jack1
+ * @since 10/24/2016
  */
 
 public class LoginActivity extends AppCompatActivity {
@@ -28,13 +22,16 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences pref;
 
     @Override
+    /**
+     * Attempts to authenticate the saved credentials or prompt the user if authentication fails.
+     */
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        //TODO some setting for user to opt out of auto-login
         pref = getSharedPreferences(getString(R.string.pref), Context.MODE_PRIVATE);
-        String user = pref.getString("email",null);
-        ((EditText)findViewById(R.id.email)).setText(user);
+        String user = pref.getString("email", null);
+        ((EditText) findViewById(R.id.email)).setText(user);
         final EditText passwordView = (EditText) findViewById(R.id.password);
         passwordView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -51,18 +48,28 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    public void submit(View v){
+
+    /**
+     * GUI-triggered event that attempts to authenticate the user-supplied credentials.
+     *
+     * @param v the calling view - irrelevant
+     */
+    public void submit(View v) {
         //http://www.codeproject.com/Articles/704865/Salted-Password-Hashing-Doing-it-Right
         String email = ((EditText) findViewById(R.id.email)).getText().toString();
         String pass = ((TextView) findViewById(R.id.password)).getText().toString();
         pref.edit().putString("email", email).putString("password", pass).apply();
         //TODO check via online
-        if(true) {
+        if (true) {
             startActivity(new Intent(this, SelectorActivity.class));
-        }else{
+        } else {
 
         }
     }
+
+    /**
+     * Authentication mechanism -  currently unused
+     */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;

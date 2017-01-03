@@ -28,6 +28,7 @@ import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * This class combines both functionalities
+ * @deprecated
  */
 public class MainActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
     public static final double[] ZERO = {0D,0D,0D};

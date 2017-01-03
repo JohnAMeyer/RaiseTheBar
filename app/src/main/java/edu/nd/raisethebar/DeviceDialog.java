@@ -40,7 +40,8 @@ import java.util.Set;
 
 import edu.nd.raisethebar.R;
 /**
- * Created by jack1 on 10/1/2016.
+ * @author JohnAMeyer
+ * @since 10/1/2016
  */
 
 /**
@@ -48,6 +49,7 @@ import edu.nd.raisethebar.R;
  * devices detected in the area after discovery. When a device is chosen
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
+ *  @deprecated
  */
 public class DeviceDialog extends AppCompatActivity {
 

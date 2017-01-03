@@ -34,7 +34,10 @@ import java.util.HashMap;
 import static edu.nd.raisethebar.R.string.pref;
 
 /**
- * Created by jack1 on 10/18/2016.
+ * Activity to select a gym from those nearby.
+ *
+ * @author JohnAMeyer
+ * @since 10/18/2016
  */
 
 public class GymSelectorActivity extends AppCompatActivity {
@@ -42,6 +45,10 @@ public class GymSelectorActivity extends AppCompatActivity {
     private static final int LOCATION_REQUEST = 1;
     private LocationManager lm;
 
+    @Override
+    /**
+     * Sets up the GUI, gets the user's location, and calls the API to get nearby gyms.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gym_selector);
@@ -61,6 +68,11 @@ public class GymSelectorActivity extends AppCompatActivity {
         locationReceived(lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER));//TODO maybe check accuracy of provided location
     }
 
+    /**
+     * Actually calls the API with the provided Longitude and Latitude.
+     *
+     * @param l the location detected
+     */
     private void locationReceived(Location l) {
         HashMap<String, String> parameters = new HashMap<>();
         DecimalFormat df = new DecimalFormat("#.0000");
@@ -84,7 +96,7 @@ public class GymSelectorActivity extends AppCompatActivity {
                     ArrayAdapter<Gym> itemsAdapter = new ArrayAdapter<Gym>(ct, android.R.layout.simple_list_item_1, items) {
                         @Override
                         public View getView(int position, View convertView, ViewGroup parent) {
-                            return convertView == null?new GymView(getContext(), getItem(position)):convertView;
+                            return convertView == null ? new GymView(getContext(), getItem(position)) : convertView;
                         }
                     };
                     //populate list with items from gyms.php - may need to use a more advanced array adaptor if simple text does not work
@@ -152,6 +164,10 @@ public class GymSelectorActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    /**
+     * Requests to get location access if not already granted - as location access is not explicitly required by this app.
+     */
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == LOCATION_REQUEST) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -163,6 +179,11 @@ public class GymSelectorActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * GUI triggered function to use the home device instead.
+     *
+     * @param v the calling view - irrelevant
+     */
     public void home(View v) {
         startActivity(new Intent(this, HomeActivity.class));
     }
@@ -170,15 +191,41 @@ public class GymSelectorActivity extends AppCompatActivity {
 
 }
 
+/**
+ * Representation of the Gym JSON data for the sake of using Adapters.
+ */
 class Gym {
     String name;
     String dist;
 
+    /**
+     * Creates a Gym.
+     *
+     * @param name name of the gym
+     * @param dist distance from the user
+     */
     public Gym(String name, String dist) {
         this.dist = dist;
         this.name = name;
     }
 
+    /**
+     * Creates a Gym from a JSONObject.
+     *
+     * @param jo the JSON representation of a Gym.
+     * @throws JSONException invalid JSONObject
+     */
+    Gym(JSONObject jo) throws JSONException {
+        this(jo.get("name").toString(), jo.getString("distance"));
+    }
+
+    /**
+     * Utility method to batch-convert a JSONArray to Gyms.
+     *
+     * @param ja a JSONArray of Gym JSONObjects
+     * @return an array of Gyms
+     * @throws JSONException invalid JSONArray or JSONObject
+     */
     static Gym[] fromJSONArr(JSONArray ja) throws JSONException {
         Gym[] items = new Gym[ja.length()];
         for (int i = 0; i < ja.length(); i++)
@@ -186,20 +233,34 @@ class Gym {
         return items;
     }
 
-    Gym(JSONObject jo) throws JSONException {
-        this(jo.get("name").toString(), jo.getString("distance"));
-    }
-
+    /**
+     * Immutable encapsulation of distance String.
+     *
+     * @return distance String field
+     */
     public String getDist() {
         return dist;
     }
 
+    /**
+     * Immutable encapsulation of name String.
+     *
+     * @return name String field
+     */
     public String getName() {
         return name;
     }
 }
 
+/**
+ * A representation of a Gym for display (Adapter) purposes.
+ */
 class GymView extends RelativeLayout {
+    /**
+     * Constructs a GymView from corresponding Gym.
+     *
+     * @param g the Gym to construct a View of.
+     */
     public GymView(Context context, Gym g) {
         super(context);
         inflate(context, R.layout.item_gym, this);

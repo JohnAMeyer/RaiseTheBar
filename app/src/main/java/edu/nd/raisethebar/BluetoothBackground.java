@@ -22,9 +22,11 @@ import java.util.Queue;
 import java.util.UUID;
 
 /**
- * Created by jack1 on 10/20/2016.
+ * A class that connects to the TI SensorTag, reads the data out, and converts it into a usable form.
+ *
+ * @author JohnAMeyer
+ * @since 10/20/2016
  */
-
 public class BluetoothBackground extends Service {
     private static final String TAG = "RTB-BluetoothBackground";
     private static final UUID UUID_MOV_SERV = UUID.fromString("f000aa80-0451-4000-b000-000000000000");
@@ -46,6 +48,9 @@ public class BluetoothBackground extends Service {
     private RecordActivity a;
 
     @Override
+    /**
+     * Returns a binder to the corresponding calling activity. Fails if Bluetooth has not been enabled on the device.
+     */
     public IBinder onBind(Intent intent) {
         BluetoothAdapter ba = BluetoothAdapter.getDefaultAdapter();
         if (ba.isEnabled()) {
@@ -60,10 +65,18 @@ public class BluetoothBackground extends Service {
         return b;
     }
 
+    /**
+     * Starts recording the incoming data packets.
+     */
     public void startRecording() {
         isRecording = true;
     }
 
+    /**
+     * Stops recording incoming data packets.
+     *
+     * @return the data collection
+     */
     public ArrayList<Tuple>[] stopRecording() {
         isRecording = false;
         ArrayList<Tuple>[] arr = new ArrayList[3];
@@ -73,6 +86,12 @@ public class BluetoothBackground extends Service {
         return arr;
     }
 
+    /**
+     * Debug method to represent byte arrays as Strings.
+     *
+     * @param data the byte array to convert
+     * @return the string representation of the data
+     */
     private String string(byte[] data) {
         String s = "";
         for (byte b : data) {
@@ -81,11 +100,20 @@ public class BluetoothBackground extends Service {
         return s;
     }
 
-    public void register(Activity a) {
-        this.a = (RecordActivity) a;
+    /**
+     * Associates the (RecordActivity) activity with this instance.
+     *
+     * @param activity the associated activity
+     */
+    void register(Activity activity) {
+        assert activity instanceof RecordActivity;
+        this.a = (RecordActivity) activity;
     }
 
     @Override
+    /**
+     * Unbinds from the previously associated activity.
+     */
     public boolean onUnbind(Intent intent) {
         if (bg != null) {
             bg.disconnect();
@@ -106,12 +134,19 @@ public class BluetoothBackground extends Service {
         return data / (32768F / 2450F); // documentation and code disagree here
     }
 
+    /**
+     * A utility class used as part of the Android Service pattern/framework
+     */
     public class LocalBinder extends Binder {
         BluetoothBackground getService() {
             return BluetoothBackground.this;
         }
     }
 
+    /**
+     * Class handling Bluetooth Low Energy messages.
+     * Also deals with updating the connection progress bar.
+     */
     private class BLECallback extends BluetoothGattCallback {
         private boolean hasReceived = false;
 
@@ -141,6 +176,9 @@ public class BluetoothBackground extends Service {
         }
 
         @Override
+        /**
+         * Receives and processes data packets.
+         */
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             if (!hasReceived) a.progress(100);
             hasReceived = true;
@@ -164,7 +202,7 @@ public class BluetoothBackground extends Service {
                 acc.add(new Tuple(new float[]{accX, accY, accZ}, time));
                 gyr.add(new Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
                 mag.add(new Tuple(new float[]{magX, magY, magZ}, time));
-                Log.v(TAG,time+";"+accX+";"+accY+";"+accZ+";"+gyrX+";"+gyrY+";"+gyrZ+";"+magX+";"+magY+";"+magZ);
+                Log.v(TAG, time + ";" + accX + ";" + accY + ";" + accZ + ";" + gyrX + ";" + gyrY + ";" + gyrZ + ";" + magX + ";" + magY + ";" + magZ);
             }
         }
 

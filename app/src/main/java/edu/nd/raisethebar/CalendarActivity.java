@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,30 +22,34 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static android.R.attr.id;
 import static edu.nd.raisethebar.R.string.pref;
 
 /**
- * Created by jack1 on 10/18/2016.
+ * An Activity exclusively used to display a calendar form of all previous sessions by the current user.
+ *
+ * @author JohnAMeyer
+ * @since 10/18/2016
  */
-
 public class CalendarActivity extends AppCompatActivity {
     private static final String TAG = "RTB-Calendar";
+    private static final String MANY = "#66ff66";
+    private static final String FEW = "#ffff99";
     SessionCalendarView calendar;
     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
     SimpleDateFormat api = new SimpleDateFormat("yyyy-MM-dd");
-    private static final String MANY = "#66ff66";
-    private static final String FEW = "#ffff99";
     HashSet<String> set = new HashSet<>();
     private DateFormat df = SimpleDateFormat.getDateInstance();
 
     @Override
+    /**
+     * Sets up GUI and calls the API to get the day-session count.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar_select);
-        HashMap<String,String> parameters = new HashMap<>();
+        HashMap<String, String> parameters = new HashMap<>();
         int id = getSharedPreferences(getString(pref), Context.MODE_PRIVATE).getInt("id", 1);//TODO define somewhere
-        parameters.put("user",""+id);
+        parameters.put("user", "" + id);
         try {
             new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/sessions.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
                 @Override
@@ -57,7 +60,7 @@ public class CalendarActivity extends AppCompatActivity {
                         result = new JSONObject(s).getJSONArray("days");
                         for (int i = 0; i < result.length(); i++) {
                             Date date = api.parse(result.getJSONObject(i).getString("date"));
-                            Log.d(TAG,api.format(date));
+                            Log.d(TAG, api.format(date));
                             Integer color = result.getJSONObject(i).getInt("sessions") > 4 ? Color.parseColor(MANY) : Color.parseColor(FEW);
                             events.put(date, color);
                             set.add(df.format(date));

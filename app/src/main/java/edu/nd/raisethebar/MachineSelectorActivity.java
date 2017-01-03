@@ -19,10 +19,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
+/**
+ * Allows the user to select from the list of machines at a given gym.
+ *
+ * @author JohnAMeyer
+ * @since 10/18/2016
+ */
 public class MachineSelectorActivity extends AppCompatActivity {
     private static final String TAG = "RTB-MachineSelector";
 
     @Override
+    /**
+     * Gets the list of machines for an Intent-given gym and displays the list to the user.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_machine_selector);
@@ -31,9 +40,9 @@ public class MachineSelectorActivity extends AppCompatActivity {
         try {
             JSONObject gym = new JSONObject(intent.getStringExtra("JSON"));
             gymId = gym.getInt("id");
-            Log.d(TAG,""+gymId);
+            Log.d(TAG, "" + gymId);
             HashMap<String, String> parameters = new HashMap<>();
-            parameters.put("gym",""+gymId);
+            parameters.put("gym", "" + gymId);
             try {
                 HTTP.AsyncCall ac = new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/devices.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
                     @Override
@@ -64,7 +73,7 @@ public class MachineSelectorActivity extends AppCompatActivity {
                                 Intent i = new Intent(ct, RecordActivity.class);
                                 try {
                                     i.putExtra("MAC", arr.getJSONObject(position).getString("MAC"));
-                                    i.putExtra("machine",arr.getJSONObject(position).getInt("id"));
+                                    i.putExtra("machine", arr.getJSONObject(position).getInt("id"));
                                 } catch (Exception e) {
                                     Log.e(TAG, "OnClickHandler", e);
                                 }

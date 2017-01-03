@@ -26,6 +26,7 @@ import java.util.UUID;
 
 /**
  * This class is for the displaying side of the app
+ * @deprecated
  */
 public class MasterActivity extends AppCompatActivity {
     private static final double[] ZERO = {0D, 0D, 0D};
