@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -198,7 +199,7 @@ public class BluetoothBackground extends Service {
                 float magY = magConvert((short) (((data[15] & 0xFF) << 8) | (data[14] & 0xFF)));
                 float magZ = magConvert((short) (((data[17] & 0xFF) << 8) | (data[16] & 0xFF)));
 
-                long time = System.currentTimeMillis();
+                long time = SystemClock.elapsedRealtimeNanos();
                 acc.add(new RecordActivity.Tuple(new float[]{accX, accY, accZ}, time));
                 gyr.add(new RecordActivity.Tuple(new float[]{gyrX, gyrY, gyrZ}, time));
                 mag.add(new RecordActivity.Tuple(new float[]{magX, magY, magZ}, time));

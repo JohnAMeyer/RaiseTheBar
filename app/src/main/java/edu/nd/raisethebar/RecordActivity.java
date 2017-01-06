@@ -176,9 +176,12 @@ public class RecordActivity extends AppCompatActivity {
         try {
             ArrayList<Tuple> acc = data[0];
             double[][] dbs = new double[acc.size()][3];
+            double[] times = new double[acc.size()];
             for (int j = 0; j < acc.size(); j++) {
                 dbs[j] = acc.get(j).data;
+                times[j] = (acc.get(j).time-acc.get(0).time)/1000000000D;
             }
+            i.putExtra("times",times);
             RealMatrix rm = new Array2DRowRealMatrix(dbs);
             RealMatrix covar = DataAnalysis.covarianceMatrix(rm);
             double[] eigVals = DataAnalysis.eigenvalues(covar);
@@ -186,6 +189,7 @@ public class RecordActivity extends AppCompatActivity {
             Log.d(TAG, "Axis: " + eigVector.toString());
             double[] components = DataAnalysis.components(rm, eigVector);
             Log.d(TAG, Arrays.toString(components));
+            i.putExtra("components",components);
             int count = DataAnalysis.counter(components);
             Log.d(TAG, "Count is: " + count);
             i.putExtra("reps", count);
@@ -193,7 +197,7 @@ public class RecordActivity extends AppCompatActivity {
             Vector2D[] planar = DataAnalysis.planarize(rm, eigVector);
             double var = DataAnalysis.rVariance(planar);
             Log.d(TAG, "Var: " + var);//.01 seems like a decent cutoff
-            i.putExtra("form", var > .01D);
+            i.putExtra("form", var > .1D);
         } catch (Exception e) {
             Log.e(TAG, "General Processing Error: ", e);
         }

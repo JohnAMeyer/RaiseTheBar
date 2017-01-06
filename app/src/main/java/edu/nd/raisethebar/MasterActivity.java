@@ -70,7 +70,6 @@ public class MasterActivity extends AppCompatActivity {
         int lengthAccelerometer = accEvents.size();
         final LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>();
         for (int i = 0; i < lengthAccelerometer; i++) {
-            //series.appendData(new DataPoint((times[i]), (velo[i])), true, lengthAccelerometer);
             series.appendData(new DataPoint((times[i]), (smoothAccelerometer[i])), true, lengthAccelerometer);
         }
         runOnUiThread(new Runnable() {

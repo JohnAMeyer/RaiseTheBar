@@ -12,7 +12,7 @@
     android:background="@color/colorPrimary">
 
     <Button
-        android:text="@string/regimens"
+        android:text="@string/routines"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_regimen"

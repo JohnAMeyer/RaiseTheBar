@@ -43,6 +43,7 @@ public class SessionActivity extends AppCompatActivity {
         int id = getSharedPreferences(getString(pref), Context.MODE_PRIVATE).getInt("id", 1);//TODO define somewhere
         parameters.put("user", "" + id);
         parameters.put("date", getIntent().getStringExtra("date"));
+        ((TextView)findViewById(R.id.textView3)).setText("Sessions of " + getIntent().getStringExtra("date"));
         try {
             new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/sessions.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
                 @Override
@@ -165,6 +166,6 @@ class SessionListItem extends RelativeLayout {
         ((TextView) findViewById(R.id.session_reps)).setText("Reps: " + s.getReps());
         ((TextView) findViewById(R.id.session_weight)).setText(" Weight: " + s.getWeight());
         ((TextView) findViewById(R.id.session_form)).setText(" " + s.getForm());
-        ((TextView) findViewById(R.id.session_time)).setText(s.getTime());
+        ((TextView) findViewById(R.id.session_time)).setText(s.getTime()+ " EST");
     }
 }

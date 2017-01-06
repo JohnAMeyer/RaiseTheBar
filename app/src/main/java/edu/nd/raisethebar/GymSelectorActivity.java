@@ -75,9 +75,13 @@ public class GymSelectorActivity extends AppCompatActivity {
      */
     private void locationReceived(Location l) {
         HashMap<String, String> parameters = new HashMap<>();
-        DecimalFormat df = new DecimalFormat("#.0000");
-        parameters.put("long", df.format(l.getLongitude()));
-        parameters.put("lat", df.format(l.getLatitude()));
+        try {
+            DecimalFormat df = new DecimalFormat("#.0000");
+            parameters.put("long", df.format(l.getLongitude()));
+            parameters.put("lat", df.format(l.getLatitude()));
+        } catch (Exception e) {
+
+        }
         try {
             HTTP.AsyncCall ac = new HTTP.AsyncCall(HTTP.Method.GET, new URI("http://whaleoftime.com/gyms.php").toURL(), parameters, new HTTP.AsyncCall.StringRunnable() {
                 @Override
